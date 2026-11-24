@@ -111,7 +111,7 @@ body{background:radial-gradient(ellipse at 50% -10%,#3a4a22 0,#1f2414 35%,#16130
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script></head><body><div class="bubble" id="bub"></div><div class="wrap" id="app"></div>
 <script>{
 const COL={kırmızı:'#e53935',mavi:'#1e63ff',sarı:'#fdd835',yeşil:'#2fa84f',beyaz:'#f2f2f2',siyah:'#151515'};
-const C4=['kırmızı','mavi','yeşil','sarı'],NAMES=['Kablo','Renk Kaydırıcı','Yön','Hesap Makinesi','Sembol','Piyano','Ses Paneli','Şalter','Labirent','Mors','Maymun Der'];
+const C4=['kırmızı','mavi','yeşil','sarı'],NAMES=['Kablo','Renk Kaydırıcı','Yön','Büyük Düğme','Sembol','Piyano','Ses Paneli','Şalter','Labirent','Mors','Maymun Der'];
 const DIRS=['↑','→','↓','←'],DN=['Yukarı','Sağ','Aşağı','Sol'],NOTES=['C','D','E','F','G','A','B'],NOTEF=[262,294,330,349,392,440,494];
 const SYM=[['★','dolu yıldız'],['☆','boş yıldız'],['▲','üçgen'],['▼','ters üçgen'],['⧗','kum saati'],['◉','halka'],['⊕','artılı daire'],['Φ','fi'],['◆','elmas'],['☾','hilal']];
 const BR=[[2,4,5],[1],[1,2],[1,4],[1,4,5],[1,5],[1,2,4],[1,2,4,5],[1,2,5],[2,4]];
@@ -241,8 +241,7 @@ function gen(){
   b.wN=3+R(2);b.wC=Array.from({length:b.wN},()=>pick(Object.keys(COL)));b.wL=pick(C4);b.wT=C4.map(()=>[R(3),R(4)]);b.wAns=b.wT[C4.indexOf(b.wL)][b.wN-3];
   b.sC=shuf(C4,r);b.sDir=C4.map(()=>R(2));
   b.dB=1+R(9);b.dL=pick(C4);b.dT=Array.from({length:9},()=>C4.map(()=>R(4)));b.dAns=b.dT[b.dB-1][C4.indexOf(b.dL)];
-  const plus=r()<.5;let x=10+R(60),y=1+R(30);if(!plus&&y>x)[x,y]=[y,x];
-  b.cEq=x+(plus?' + ':' − ')+y;b.c1=plus?x+y:x-y;b.cL=pick(C4);b.cT=C4.map(()=>[R(10),R(10)]);b.c2=b.cT[C4.indexOf(b.cL)][b.c1%2];b.cKeys=shuf([0,1,2,3,4,5,6,7,8,9],r);
+  b.uB=1+R(9);b.uC=pick(C4);b.uT=C4.map(()=>[1+R(4),1+R(4)]);b.uAns=b.uT[C4.indexOf(b.uC)][b.uB%2];
   b.yS=shuf([...Array(10).keys()],r).slice(0,4);b.ySnd=[0,1,2].map(()=>R(4));b.yT=SYM.map(()=>[0,1,2].map(()=>R(4)));b.yBtn=shuf([0,1,2,3],r);
   b.pB=1+R(7);b.pL=pick(C4);b.pT=Array.from({length:7},()=>C4.map(()=>Array.from({length:4},()=>R(7))));b.pAns=b.pT[b.pB-1][C4.indexOf(b.pL)];
   b.bB=Array.from({length:9},()=>1+R(9));b.bC=Array.from({length:9},()=>R(4));b.bS=R(9);
@@ -266,7 +265,7 @@ function manualPages(){
   0:()=>need('kablo sayısı (Kör sayar), lamba rengi (Sağır)')+`<p>Lambanın satırı ile kablo sayısının sütununun kesiştiği kabloyu (soldan sayarak) kestirin.</p><table><tr><th>Lamba</th><th>3 kablo</th><th>4 kablo</th></tr>${C4.map((c,i)=>`<tr><td>${dot(c)}</td><td><b>${b.wT[i][0]+1}.</b> kablo</td><td><b>${b.wT[i][1]+1}.</b> kablo</td></tr>`).join('')}</table>`,
   1:()=>need('sürgü renkleri soldan sağa (Sağır)')+`<p>Her sürgüyü rengine göre yukarı ya da aşağı ittirin (dokununca yer değiştirir), sonra ENTER.</p><table>${C4.map((c,i)=>`<tr><td>${dot(c)}</td><td><b>${b.sDir[i]?'↑ YUKARI':'↓ AŞAĞI'}</b></td></tr>`).join('')}</table>`,
   2:()=>need('ortadaki Braille sayısı (Kör), lamba rengi (Sağır)')+`<p>Sayının satırında, lamba renginin sütunundaki yöne bastırın.</p><table>${hd}${b.dT.map((row,n)=>`<tr><td><b>${n+1}</b></td>${row.map(d=>`<td>${DIRS[d]} ${DN[d]}</td>`).join('')}</tr>`).join('')}</table>`,
-  3:()=>need('işlem, sonra yanan lamba rengi (Sağır), tuşlardaki Braille (Kör)')+`<p><b>Adım 1:</b> Ekrandaki işlemi çözün, sonucu tuşlatıp ENTER'a bastırın.</p><p><b>Adım 2:</b> İlk sonuç kabul edilince ekranda ✓ çıkar ve <b>lamba ancak o zaman yanar</b>. Sonuç tek mi çift mi, lamba hangi renk? Tablodaki rakamın tuşuna bastırın. Tuşların yeri karışıktır, Kör üstlerindeki Braille'e göre basar.</p><table><tr><th>Lamba</th><th>Tek</th><th>Çift</th></tr>${C4.map((c,i)=>`<tr><td>${dot(c)}</td><td><b>${b.cT[i][1]}</b></td><td><b>${b.cT[i][0]}</b></td></tr>`).join('')}</table>`,
+  3:()=>need('düğmedeki Braille sayısı (Kör), düğmenin rengi (Sağır)')+`<p>Braille sayısı tek mi çift mi, düğme hangi renk? Tablodaki sayı kadar düğmeye art arda bastırın, sonra elinizi çekip 1,5 saniye bekleyin. Fazla ya da eksik basmak hata sayılır. Sağır, düğmenin önündeki ışıklardan kaç kez basıldığını görür.</p><table><tr><th>Düğme rengi</th><th>Tek</th><th>Çift</th></tr>${C4.map((c,i)=>`<tr><td>${dot(c)}</td><td><b>${b.uT[i][1]} kez</b></td><td><b>${b.uT[i][0]} kez</b></td></tr>`).join('')}</table>`,
   4:()=>need('ses çıkaran sembol (Kör dokunarak bulur, Sağır şeklini söyler), aşama (Sağır: yanan ışık sayısı + 1)')+`<p>3 aşama var, her aşamada başka sembol ses çıkarır. Sembolün satırında o aşamanın rengini bulun; Sağır o renkli butonun yerini Kör'e söyler.</p><table><tr><th>Sembol</th><th>Aşama 1</th><th>Aşama 2</th><th>Aşama 3</th></tr>${SYM.map((s,i)=>`<tr><td><b style="font-size:22px">${s[0]}</b> ${s[1]}</td>${b.yT[i].map(c=>`<td>${dot(C4[c])}</td>`).join('')}</tr>`).join('')}</table>`,
   5:()=>need('Braille sayısı (Kör), lamba rengi (Sağır)')+`<p>Dört notayı sırayla çaldırın. Tuşlar soldan sağa: C D E F G A B. Yanlış nota baştan başlatır.</p><table>${hd}${b.pT.map((row,n)=>`<tr><td><b>${n+1}</b></td>${row.map(q=>`<td>${q.map(z=>NOTES[z]).join(' ')}</td>`).join('')}</tr>`).join('')}</table>`,
   6:()=>need('ses çıkaran butonun Braille sayısı (Kör) ve rengi (Sağır)')+`<p>Kör bip sesinin geldiği butonu bulur: ince ses üst sıra, kalın ses alt sıra; sol, orta ya da sağ kulaktan gelir. O çiftin 3×3 düzeninde sarı olan butonları bastırın (tekrar basınca kalkar), sonra ENTER.</p><table class="sbt">${hd}${b.bT.map((row,n)=>`<tr><td><b>${n+1}</b></td>${row.map(p=>`<td><div class="g3">${[...p].map(z=>`<i class="${z==='1'?'y':''}"></i>`).join('')}</div></td>`).join('')}</tr>`).join('')}</table>`,
@@ -295,6 +294,7 @@ const flash=c=>{app.classList.remove('okf','badf');void app.offsetWidth;app.clas
 function ok(m){if(S.done.includes(m))return;S.done.push(m);beep(660,.12,'sine',.15);setTimeout(()=>beep(990,.2,'sine',.15),120);flash('okf');S.done.length===11?finish(true):sync()}
 function bad(){S.strikes++;beep(120,.5,'sawtooth',.2);flash('badf');S.strikes>=3?finish(false,'3 hata'):sync()}
 function finish(win,why){clearInterval(timer);S.over={win,why:why||''};sync()}
+let ubT=0;
 function doAct(t,i){
   if(S.over||st.role!=='kor')return;const D=S.done;
   switch(t){
@@ -305,9 +305,7 @@ function doAct(t,i){
   case 'sl':if(D.includes(1))return;S.sl[i]^=1;beep(350,.04);return sync();
   case 'slE':if(D.includes(1))return;return S.sl.every((v,k)=>v===b.sDir[C4.indexOf(b.sC[k])])?ok(1):bad();
   case 'dir':if(D.includes(2))return;beep(500,.05);return i===b.dAns?ok(2):bad();
-  case 'ck':if(D.includes(3))return;beep(800,.03);
-    if(i==='E'){if(S.cst)return;if(S.calc===String(b.c1)){S.cst=1;S.calc='';beep(990,.12,'sine',.12);return sync()}S.calc='';return bad()}
-    if(S.cst)return +i===b.c2?ok(3):bad();if(S.calc.length<3)S.calc+=i;return sync();
+  case 'ub':if(D.includes(3))return;S.uc++;beep(380,.08,'square',.12);clearTimeout(ubT);ubT=setTimeout(()=>{if(S.over||S.done.includes(3))return;const c=S.uc;S.uc=0;c===b.uAns?ok(3):bad()},1500);return sync();
   case 'sym':if(D.includes(4))return;if(i===b.ySnd[S.ys]){cap('🔊 Sembol: bu ses çıkarıyor');return beep(1200,.25,'triangle',.25)}return beep(200,.03);
   case 'syb':if(D.includes(4))return;beep(600,.05);if(b.yBtn[i]===b.yT[b.yS[b.ySnd[S.ys]]][S.ys]){S.ys++;return S.ys===3?ok(4):sync()}return bad();
   case 'pk':if(D.includes(5))return;beep(NOTEF[i],.35,'sine',.18);if(i===b.pAns[S.pi]){S.pi++;return S.pi===4?ok(5):sync()}S.pi=0;return bad();
@@ -323,7 +321,7 @@ function doAct(t,i){
 }
 function play(){
   phase='game';endT=0;applyAudio();b=gen();
-  S={pr:0,cz:0,czd:.025,al:0,cut:[],sl:[0,0,0,0],calc:'',cst:0,ys:0,pi:0,bp:'000000000',sw:[0,0,0,0],mz:b.mS,od:[0,0,0,0],ks:0,done:[...Array(11).keys()].filter(i=>!b.act.includes(i)),strikes:0,left:b.time,over:null};
+  S={uc:0,pr:0,cz:0,czd:.025,al:0,cut:[],sl:[0,0,0,0],calc:'',cst:0,ys:0,pi:0,bp:'000000000',sw:[0,0,0,0],mz:b.mS,od:[0,0,0,0],ks:0,done:[...Array(11).keys()].filter(i=>!b.act.includes(i)),strikes:0,left:b.time,over:null};
   const role=st.role,head=`<div class="bar"><div>${MKc(role)}<b>${esc(st.name||RN[role])}</b> · oda ${esc(key())} · tur ${st.round}</div>${role==='kor'?'':`<div class="timer" id="t"></div>`}</div>`;
   app.className='wrap'+(role==='kor'?' blind':'');
   if(role==='dilsiz'){
@@ -445,9 +443,7 @@ function scene3d(blind){
   {const o=mg[0],n=b.wN,L=2.2;B.wires=b.wC.map((c,i)=>{const x=-.75+i*1.2/(n-1);return[-1,1].map(sg=>{const pv=new T.Group();pv.position.set(x,.82,sg*L/2);o.add(pv);mesh(Bx(.22,.22,.22),M(0x888888),x,.74,sg*L/2,o);const h=mesh(Cy(.08,L/2),M(hex(c)),0,0,-sg*L/4,pv);h.rotation.x=Math.PI/2;h.userData.a=['cut',i];h.userData.m=0;pick.push(h);return pv})});lamp(o,.8,0,b.wL,.2)}
   {const o=mg[1];B.knobs=b.sC.map((c,i)=>{const x=-.75+i*.5;mesh(Bx(.12,.05,1.6),M(0x111111),x,.7,-.2,o);return P(Bx(.32,.2,.32),hex(c),x,.82,-.2,o,['sl',i])});P(Bx(1.2,.15,.35),0x2fa84f,0,.78,1.1,o,['slE'])}
   {const o=mg[2];mesh(Bx(.5,.1,.5),M(0x555555),0,.74,0,o);brl(o,b.dB,0,.82,0);[[0,-.6],[.6,0],[0,.6],[-.6,0]].forEach(([x,z],d)=>P(Bx(.4,.18,.4),0x999999,x,.78,z,o,['dir',d]));lamp(o,.8,-1.05,b.dL)}
-  {const o=mg[3];B.ct=tex(256,128);plane(o,.95,.6,.5,-.9,B.ct);B.cl=lamp(o,.5,-.25,null);
-   b.cKeys.forEach((d,i)=>{const x=-.8+i%3*.36,z=-.6+Math.floor(i/3)*.42;P(Bx(.3,.16,.32),0xbbbbbb,x,.77,z,o,['ck',String(d)]);brl(o,d,x,.91,z,.08)});
-   P(Bx(.66,.16,.32),0x2fa84f,-.26,.77,.66,o,['ck','E'])}
+  {const o=mg[3];mesh(Cy(.95,.12),M(0x222222,{metalness:.6}),0,.7,0,o);B.ub=P(Cy(.7,.3),hex(b.uC),0,.85,-.1,o,['ub']);brl(o,b.uB,0,1.04,-.1,.12);B.ul=[0,1,2,3,4,5].map(i=>lamp(o,-.75+i*.3,1.15,null,.08))}
   {const o=mg[4];[[-.45,-.75],[0,-.25],[-.45,.25],[-.9,-.25]].forEach(([x,z],k)=>{let top;if(blind)top=M(0);else{const t=tex(96,96),c=t.c;c.fillStyle='#eee';c.fillRect(0,0,96,96);c.fillStyle='#111';c.font='64px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(SYM[b.yS[k]][0],48,52);t.needsUpdate=true;top=new T.MeshStandardMaterial({map:t})}
      const sd=M(0xcccccc),m=mesh(new T.BoxGeometry(.4,.14,.4),[sd,sd,top,sd,sd,sd],x,.76,z,o);m.userData.a=['sym',k];m.userData.m=4;m.userData.y0=.76;pick.push(m)});
    b.yBtn.forEach((c,i)=>P(Cy(.17,.16),hex(C4[c]),.75,.78,-.75+i*.45,o,['syb',i]));B.yl=[0,1,2].map(i=>lamp(o,-.75+i*.3,1.15,null,.08))}
@@ -465,7 +461,6 @@ function scene3d(blind){
    B.trk=mesh(Bx(1.7,.12,.06),M(0x111111),2.6,0,fz);B.knob=mesh(Bx(.3,.4,.2),M(0xdddddd),2.6,0,fz+.1);B.knob.userData.a=['knob'];pick.push(B.knob);B.trk.visible=B.knob.visible=ch.includes('srg');
    B.al=mesh(Sp(.17),M(0x440000),1.3,.3,fz+.05);B.alb=mesh(Bx(.35,.3,.18),M(0xcc2222),1.3,-.22,fz+.08);B.alb.userData.a=['alarm'];pick.push(B.alb);B.al.visible=B.alb.visible=ch.includes('alm')}
   const drawGauge=()=>{const k=B.ga.c;k.clearRect(0,0,128,128);k.fillStyle='#f4efe1';k.beginPath();k.arc(64,64,62,0,7);k.fill();k.lineWidth=10;[['#2fa84f',.75,1.5],['#fdd835',1.5,1.95],['#e53935',1.95,2.25]].forEach(([c,a,e])=>{k.strokeStyle=c;k.beginPath();k.arc(64,64,48,a*Math.PI,e*Math.PI);k.stroke()});const an=(.75+Math.min(100,S.pr)/100*1.5)*Math.PI;k.strokeStyle='#111';k.lineWidth=5;k.beginPath();k.moveTo(64,64);k.lineTo(64+Math.cos(an)*44,64+Math.sin(an)*44);k.stroke();B.ga.needsUpdate=true};
-  const drawCalc=()=>{const k=B.ct.c;k.fillStyle='#0d1a0d';k.fillRect(0,0,256,128);k.fillStyle='#7cff7c';k.font='bold 40px monospace';k.textAlign='center';k.fillText(S.cst?'✓ '+b.c1:b.cEq,128,50);k.fillText(S.cst?'SON RAKAM?':S.calc||'_',128,108);B.ct.needsUpdate=true};
   const drawMaze=()=>{const k=B.mt.c,s=51.2,ce=c=>[c%5*s+s/2,Math.floor(c/5)*s+s/2];k.fillStyle='#e8e2cc';k.fillRect(0,0,256,256);
     [[b.mS,'#e53935'],[b.mG,'#2fa84f']].forEach(([c,f])=>{k.fillStyle=f;k.fillRect(c%5*s+3,Math.floor(c/5)*s+3,s-6,s-6)});
     k.strokeStyle='#999';k.lineWidth=2;k.beginPath();for(let i=1;i<5;i++){k.moveTo(i*s,0);k.lineTo(i*s,256);k.moveTo(0,i*s);k.lineTo(256,i*s)}k.stroke();
@@ -546,8 +541,8 @@ function scene3d(blind){
     B.knobs.forEach((k,i)=>k.position.z+=((S.sl[i]?-.8:.4)-k.position.z)*.3);
     B.sb.forEach((m,k)=>{if(S.bp[k]==='1')m.position.y=m.userData.y0-.08});
     B.sw.forEach((pv,i)=>{const tg=S.sw[i]?-.5:.5;pv.rotation.x+=(tg-pv.rotation.x)*.3});
-    if(!blind){const sg=[S.calc,S.cst,S.mz,S.od.join('')].join('|');if(sg!==lastX){lastX=sg;drawCalc();drawMaze();drawDials()}
-      B.cl.material.emissive.setHex(S.cst?hex(b.cL):0);
+    if(!blind){const sg=[S.calc,S.cst,S.mz,S.od.join('')].join('|');if(sg!==lastX){lastX=sg;drawMaze();drawDials()}
+      B.ul.forEach((l,i)=>l.material.emissive.setHex(i<S.uc?0xffcc00:0));
       B.yl.forEach((l,i)=>l.material.emissive.setHex(i<S.ys?0xffcc00:0));
       const tt=(now/1000)%MS[1];B.ml.material.emissive.setHex(MS[0].some(([a,e])=>tt>=a&&tt<e)?0xffffff:0);
       B.kl.material.emissive.setHex(S.ks<4&&now%2000<600?hex(C4[b.kF[S.ks]]):0);
