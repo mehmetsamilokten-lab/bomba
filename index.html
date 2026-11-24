@@ -103,6 +103,7 @@ body{background:radial-gradient(ellipse at 50% -10%,#3a4a22 0,#1f2414 35%,#16130
 .ptab{border-collapse:collapse;width:100%}.ptab th,.ptab td{padding:8px 10px 8px 0;text-align:start;border-bottom:1px solid #2e2a22;white-space:nowrap}.ptab td:nth-child(n+3){text-align:right}
 .pv{display:grid;place-items:center}.pv .mk{width:140px;height:140px}.sw2{width:48px;height:48px;border-radius:50%;border:3px solid transparent}.sw2[aria-pressed=true]{border-color:var(--y)}.ht[aria-pressed=true]{background:var(--y);color:#111}
 .scroll{overflow-x:auto}
+.priv{margin:18px 0 8px;text-align:center;color:#8a8270;font-size:13px}.priv summary{cursor:pointer;display:inline-block;padding:10px}.priv p{max-width:520px;margin:4px auto;text-align:start}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script></head><body><div class="bubble" id="bub"></div><div class="wrap" id="app"></div>
 <script>{
 const COL={kırmızı:'#e53935',mavi:'#1e63ff',sarı:'#fdd835',yeşil:'#2fa84f',beyaz:'#f2f2f2',siyah:'#151515'};
@@ -143,14 +144,14 @@ function setup(err=''){
   <label for="room">Oda kodu</label><div class="row"><input id="room" value="${esc(st.room)}" placeholder="muz42" autocomplete="off"><button id="rnd">🎲 Rastgele</button><button id="cp">🔗 Davet kopyala</button></div>
   <label>Rolünü seç</label><div class="roles">${ROLES.map(([k,n,d])=>`<button class="role" data-r="${k}" aria-pressed="${st.role===k}">${MKc(k,st.cos||{})}<span>${n}<small>${d}</small></span></button>`).join('')}</div>
   <label>Grafik kalitesi</label><div class="row"><button class="q" data-q="h" aria-pressed="${st.q!=='l'}">✨ Yüksek</button><button class="q" data-q="l" aria-pressed="${st.q==='l'}">⚡ Akıcı (tablet için)</button></div>
-  <button class="go" id="go">Odaya bağlan</button><p class="hint" id="err">${esc(err)}</p>
-  <p class="hint">ℹ️ Bu oyun, oyunun sahibine giriş zamanını, oyun içi adını, oyun sonuçlarını ve cihaz bilgilerini (cihaz türü, işletim sistemi, tarayıcı, ekran) kaydeder. Konum ve IP adresi kaydedilmez.</p></div>
+  <button class="go" id="go">Odaya bağlan</button><p class="hint" id="err">${esc(err)}</p></div>
   <details class="card how"><summary>Nasıl oynanır?</summary><ol>
   <li>Üç kişi aynı oda kodunu yazar, herkes farklı bir rol seçer. Kör Maymun bombayı başlatır.</li>
   <li><b>Kör Maymun</b> karanlıkta yalnızca şekilleri ve Braille noktalarını görür, düğmelere o basar. Herkesi duyar.</li>
   <li><b>Sağır Maymun</b> renkleri, sembolleri ve ekranları görür ve anlatır, ama kimseyi duyamaz.</li>
   <li><b>Dilsiz Maymun</b> kılavuz kitapçığı okur. Konuşamaz; işaret butonları ve kafasıyla anlatır.</li>
-  <li>Bir modüle dokununca ona yakınlaşırsınız. Süre bitmeden ve 3 hata yapmadan tüm modülleri çözün. Turlar ilerledikçe zor modüller ve Kaos olayları gelir.</li></ol></details>`;
+  <li>Bir modüle dokununca ona yakınlaşırsınız. Süre bitmeden ve 3 hata yapmadan tüm modülleri çözün. Turlar ilerledikçe zor modüller ve Kaos olayları gelir.</li></ol></details>
+  <details class="priv"><summary>ℹ️ Gizlilik</summary><p>Bu oyun, oyunun sahibine giriş zamanını, oyun içi adını, oyun sonuçlarını ve cihaz bilgilerini (cihaz türü, işletim sistemi, tarayıcı, ekran) kaydeder. Konum ve IP adresi kaydedilmez.</p></details>`;
   app.querySelectorAll('.role').forEach(x=>x.onclick=()=>{st.role=x.dataset.r;app.querySelectorAll('.role').forEach(y=>y.setAttribute('aria-pressed',y===x))});
   app.querySelectorAll('.q').forEach(x=>x.onclick=()=>{st.q=x.dataset.q;save();app.querySelectorAll('.q').forEach(y=>y.setAttribute('aria-pressed',y===x))});
   document.getElementById('prof').onclick=profileView;document.getElementById('pls').onclick=playersView;
