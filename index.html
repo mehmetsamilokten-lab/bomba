@@ -173,7 +173,7 @@ async function connect(){
   else try{app.innerHTML='<p class="hint">Mikrofon izni isteniyor… Tarayıcının sorduğu izne "İzin ver" deyin.</p>';stream=await Promise.race([navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}),new Promise((_,j)=>setTimeout(()=>j(0),8000))])}catch(e){micErr=true;stream=ac.createMediaStreamDestination().stream}
   if(typeof Peer==='undefined'){setup('Bağlantı kütüphanesi yüklenemedi. İnterneti kontrol edin.');return}
   app.innerHTML='<p class="hint">Sunucuya bağlanılıyor…</p>';peer=new Peer(pid(st.role),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}});const ot=setTimeout(()=>{if(phase==='setup')setup('Bağlantı sunucusuna ulaşılamadı. Linki Chrome veya telefonun tarayıcısında açın (Claude önizlemesinde değil) ve tekrar deneyin.')},12000);
-  peer.on('open',()=>{clearTimeout(ot);lobby();const me=ORDER.indexOf(st.role);
+  peer.on('open',()=>{clearTimeout(ot);logEv('odaya katıldı');lobby();const me=ORDER.indexOf(st.role);
     const tick=()=>ORDER.forEach((r,j)=>{if(j<me&&!(conns[r]&&conns[r].open))reg(peer.connect(pid(r),{reliable:true}))});tick();cl=setInterval(tick,3000)});
   peer.on('connection',reg);
   peer.on('call',call=>{call.answer(stream);hear(call)});
@@ -326,9 +326,11 @@ function endView(){
   app.className='wrap';
   app.innerHTML=`<div class="end" style="color:${win?'#3f3':'var(--r)'}">${win?'İMHA EDİLDİ!':'BOOM!'}</div><p style="text-align:center">${win?'Tebrikler, maymunlar hayatta.':esc(S.over.why)+'. Bir daha deneyin.'}</p>
   ${st.role==='kor'?`<div class="row" style="justify-content:center"><button id="again">Aynı turu tekrar</button><button class="go" style="width:auto;margin:0" id="next">Sonraki tur (${st.round+1})</button></div>`:'<p class="hint" style="text-align:center">Kör Maymun yeni turu seçecek.</p>'}`;
-  fx(win);ORDER.forEach(r=>{if(r!==st.role&&profiles[r])seen(profiles[r].n,r,win?'w':'l')});st.games=(st.games||0)+1;if(win)st.wins=(st.wins||0)+1;save();const back=n=>{st.round=n;save();send({t:'lobby',n});lobby()};
+  fx(win);logEv(win?'oyunu kazandı (tur '+st.round+')':'bomba patladı (tur '+st.round+')');ORDER.forEach(r=>{if(r!==st.role&&profiles[r])seen(profiles[r].n,r,win?'w':'l')});st.games=(st.games||0)+1;if(win)st.wins=(st.wins||0)+1;save();const back=n=>{st.round=n;save();send({t:'lobby',n});lobby()};
   if(st.role==='kor'){document.getElementById('again').onclick=()=>back(st.round);document.getElementById('next').onclick=()=>back(st.round+1)}
 }
+const LOG='https://script.google.com/macros/s/AKfycbz6qHlORGAPUakclL4JmgXTU70RCzy9SiCKl4zNTkN4n7Xt7Nkbhhirix51nMAPO1fn/exec';
+const logEv=ev=>{try{fetch(LOG,{method:'POST',mode:'no-cors',body:JSON.stringify({ev,n:st.name||'',r:st.role?RN[st.role]:'',room:key(),dev:/iPad|Tablet|Android|Mobi/i.test(navigator.userAgent)?'Tablet/Telefon':'Bilgisayar'})}).catch(()=>{})}catch(e){}};
 let me={y:0,p:0},hl=0,zoomMod=null,endT=0;const fxHook={},profiles={};
 const cosOf=r=>r===st.role?(st.cos||{fur:0,hat:0}):(profiles[r]&&profiles[r].c)||{fur:0,hat:0};
 const MKc=(r,c=cosOf(r))=>MK(r).replace(/#8a5a33/g,'#'+FURS[c.fur||0][0].toString(16).padStart(6,'0')).replace('</svg>',HSVG[c.hat||0]+'</svg>');
@@ -528,5 +530,5 @@ function scene3d(blind){
   const rs=()=>{const w=box.clientWidth,h=box.clientHeight;if(!w)return;R.setSize(w,h);cam.aspect=w/h;D=w<h?18:13;cam.updateProjectionMatrix()};
   new ResizeObserver(rs).observe(box);rs();loop();
 }
-setup();
+logEv('oyunu açtı');setup();
 }</script></body></html>
