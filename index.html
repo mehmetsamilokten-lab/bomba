@@ -104,6 +104,9 @@ body{background:radial-gradient(ellipse at 50% -10%,#3a4a22 0,#1f2414 35%,#16130
 .pv{display:grid;place-items:center}.pv .mk{width:140px;height:140px}.sw2{width:48px;height:48px;border-radius:50%;border:3px solid transparent}.sw2[aria-pressed=true]{border-color:var(--y)}.ht[aria-pressed=true]{background:var(--y);color:#111}
 .scroll{overflow-x:auto}
 .priv{margin:18px 0 8px;text-align:center;color:#8a8270;font-size:13px}.priv summary{cursor:pointer;display:inline-block;padding:10px}.priv p{max-width:520px;margin:4px auto;text-align:start}
+.roles2{display:grid;gap:8px;margin:12px 0}.rb{display:flex;align-items:center;gap:10px;text-align:start}.rb .mk{width:44px;height:44px;flex:none}.rb small{display:block;color:var(--mut);font-weight:400}.rb.on{background:#1f5a2a}.rb:disabled{background:var(--y);color:#111;opacity:1}.rb:disabled small{color:#333}
+.swapq{background:#3a2e10;border:1px solid var(--y);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chat h3{margin:0 0 8px}.chatlist{max-height:220px;overflow-y:auto;background:#0e0c0a;border-radius:10px;padding:8px 12px;margin-bottom:8px}.chatlist p{margin:4px 0;overflow-wrap:anywhere}#ci{flex:1;width:auto;min-width:0}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script></head><body><div class="bubble" id="bub"></div><div class="wrap" id="app"></div>
 <script>{
 const COL={kırmızı:'#e53935',mavi:'#1e63ff',sarı:'#fdd835',yeşil:'#2fa84f',beyaz:'#f2f2f2',siyah:'#151515'};
@@ -163,32 +166,50 @@ function setup(err=''){
 }
 const ans={},heads={};let lastG=null;
 function talking(r){const a=ans[r];if(!a)return false;const d=new Uint8Array(a.fftSize);a.getByteTimeDomainData(d);let m=0;for(const x of d)m=Math.max(m,Math.abs(x-128));return m>12}
-function hear(call){call.on('stream',s=>{const r=roleOf(call.peer);const a=auds[r]||(auds[r]=new Audio());a.srcObject=s;a.muted=st.role==='sagir';a.play().catch(()=>{});try{const an=ac.createAnalyser();an.fftSize=256;ac.createMediaStreamSource(s).connect(an);ans[r]=an}catch(e){}})}
+function hear(call){call.on('stream',s=>{const r=roleOf(call.peer);const a=auds[r]||(auds[r]=new Audio());a.srcObject=s;a.muted=phase==='game'&&st.role==='sagir';a.play().catch(()=>{});try{const an=ac.createAnalyser();an.fftSize=256;ac.createMediaStreamSource(s).connect(an);ans[r]=an}catch(e){}})}
 function reg(c){const r=roleOf(c.peer);
   c.on('open',()=>{conns[r]=c;c.send({t:'hi',r:st.role,n:st.name||'',c:st.cos||{fur:0,hat:0}});if(ORDER.indexOf(st.role)>ORDER.indexOf(r))hear(peer.call(c.peer,stream));if(phase==='lobby')lobby();if(st.role==='kor'&&phase!=='setup')c.send({t:'round',n:st.round,ph:phase,s:S})});
   c.on('data',onData);c.on('close',()=>{if(conns[r]===c)delete conns[r];if(phase==='lobby')lobby()})}
+let joined=false,selfMute=false,swapReq=null,myReq=null;const chatLog=[];
+function applyAudio(){const g=phase==='game';for(const r in auds)auds[r].muted=g&&st.role==='sagir';if(stream)stream.getAudioTracks().forEach(t=>t.enabled=!selfMute&&!(g&&st.role==='dilsiz'))}
 async function connect(){
   app.innerHTML='<p class="hint">Bağlanılıyor…</p>';
   try{ac=ac||new AudioContext();await ac.resume()}catch(e){}
-  micErr=false;
-  if(st.role==='dilsiz')stream=ac.createMediaStreamDestination().stream;
-  else try{app.innerHTML='<p class="hint">Mikrofon izni isteniyor… Tarayıcının sorduğu izne "İzin ver" deyin.</p>';stream=await Promise.race([navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}),new Promise((_,j)=>setTimeout(()=>j(0),8000))])}catch(e){micErr=true;stream=ac.createMediaStreamDestination().stream}
+  micErr=false;joined=false;
+  try{app.innerHTML='<p class="hint">Mikrofon izni isteniyor… Tarayıcının sorduğu izne "İzin ver" deyin.</p>';stream=await Promise.race([navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}),new Promise((_,j)=>setTimeout(()=>j(0),8000))])}catch(e){micErr=true;stream=ac.createMediaStreamDestination().stream}
   if(typeof Peer==='undefined'){setup('Bağlantı kütüphanesi yüklenemedi. İnterneti kontrol edin.');return}
-  app.innerHTML='<p class="hint">Sunucuya bağlanılıyor…</p>';peer=new Peer(pid(st.role),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}});const ot=setTimeout(()=>{if(phase==='setup')setup('Bağlantı sunucusuna ulaşılamadı. Linki Chrome veya telefonun tarayıcısında açın (Claude önizlemesinde değil) ve tekrar deneyin.')},12000);
-  peer.on('open',()=>{clearTimeout(ot);logEv('odaya katıldı',{'Mikrofon':st.role==='dilsiz'?'kapalı (Dilsiz)':micErr?'izin verilmedi':'açık'});lobby();const me=ORDER.indexOf(st.role);
-    const tick=()=>ORDER.forEach((r,j)=>{if(j<me&&!(conns[r]&&conns[r].open))reg(peer.connect(pid(r),{reliable:true}))});tick();cl=setInterval(tick,3000)});
+  startPeer(0);
+}
+function startPeer(retry,swapping){
+  app.innerHTML='<p class="hint">'+(swapping?'Rol değiştiriliyor…':'Sunucuya bağlanılıyor…')+'</p>';
+  peer=new Peer(pid(st.role),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}});
+  const ot=setTimeout(()=>{if(phase==='setup'&&!joined)setup('Bağlantı sunucusuna ulaşılamadı. Linki Chrome veya telefonun tarayıcısında açın (Claude önizlemesinde değil) ve tekrar deneyin.')},12000);
+  peer.on('open',()=>{clearTimeout(ot);if(!joined){joined=true;logEv('odaya katıldı',{'Mikrofon':micErr?'izin verilmedi':'açık'})}lobby();const me=ORDER.indexOf(st.role);
+    const tick=()=>ORDER.forEach((r,j)=>{if(j<me&&!(conns[r]&&conns[r].open))reg(peer.connect(pid(r),{reliable:true}))});tick();clearInterval(cl);cl=setInterval(tick,3000)});
   peer.on('connection',reg);
   peer.on('call',call=>{call.answer(stream);hear(call)});
-  peer.on('error',e=>{if(e.type==='unavailable-id')setup('Bu odada bu rol zaten alınmış. Başka rol seçin.');else if(e.type!=='peer-unavailable'&&phase==='setup')setup('Bağlantı hatası ('+e.type+'). Biraz bekleyip tekrar deneyin.')});
+  peer.on('error',ev=>{if(ev.type==='unavailable-id'){if(swapping&&retry<8){clearTimeout(ot);try{peer.destroy()}catch(x){}setTimeout(()=>startPeer(retry+1,true),1500)}else{clearTimeout(ot);setup('Bu odada bu rol zaten alınmış. Başka rol seçin.')}}else if(ev.type!=='peer-unavailable'&&phase==='setup'&&!joined)setup('Bağlantı hatası ('+ev.type+'). Biraz bekleyip tekrar deneyin.')});
 }
+function switchRole(nr,delay=0){setTimeout(()=>{clearInterval(cl);if(peer){peer.destroy();peer=null}for(const r in conns)delete conns[r];for(const r in auds){auds[r].pause();delete auds[r]}for(const r in ans)delete ans[r];for(const r in profiles)delete profiles[r];
+  st.role=nr;save();swapReq=null;myReq=null;phase='setup';app.innerHTML='<p class="hint">Rol değiştiriliyor…</p>';setTimeout(()=>startPeer(0,true),1200)},delay)}
+const chatRow=m=>`<p><b>${esc(m.f)}:</b> ${esc(m.x)}</p>`;
+function addChat(f,x){chatLog.push({f,x});if(chatLog.length>60)chatLog.shift();const l=document.getElementById('chatlist');if(l){l.insertAdjacentHTML('beforeend',chatRow({f,x}));l.scrollTop=l.scrollHeight}}
 function lobby(){
-  phase='lobby';clearInterval(timer);
+  const dr=document.getElementById('ci'),draft=dr?dr.value:'',foc=dr&&document.activeElement===dr;
+  phase='lobby';clearInterval(timer);applyAudio();
   const all=ORDER.every(r=>r===st.role||(conns[r]&&conns[r].open));
   app.innerHTML=`<div class="bar"><h1 style="margin:0">Oda ${esc(key())}</h1><button id="back">Çık</button></div><div class="card">
   <p><b>Sen: ${RN[st.role]}</b> · Tur ${st.round}</p><div class="row"><button id="prof">👤 Profil & Kostüm</button><button id="pls">📋 Oyuncular</button></div>
-  <div class="st">${ORDER.map(r=>`<span class="${r===st.role||(conns[r]&&conns[r].open)?'on':''}">${MKc(r)}${RN[r]}${nmOf(r)?' · '+esc(nmOf(r)):''}: ${r===st.role?'sen':conns[r]&&conns[r].open?'bağlı':'bekleniyor…'}</span>`).join('')}</div>
+  <div class="roles2">${ORDER.map(r=>{const mine=r===st.role,taken=!mine&&conns[r]&&conns[r].open;return`<button class="rb${mine||taken?' on':''}" data-r="${r}" ${mine?'disabled':''}>${MKc(r)}<span>${RN[r]}${nmOf(r)?' · '+esc(nmOf(r)):''}<small>${mine?'senin rolün':taken?'bağlı · takas iste':'boş · bu role geç'}</small></span></button>`}).join('')}</div>
+  ${swapReq?`<div class="swapq">${esc(swapReq.nm||RN[swapReq.f])} seninle rol değiştirmek istiyor (sen ${RN[swapReq.f]} olacaksın). <button id="swy">Kabul</button><button id="swn">Reddet</button></div>`:''}<p class="hint" id="linfo"></p>
+  <button id="mic">${selfMute?'🔇 Mikrofonun kapalı':'🎤 Mikrofonun açık'}</button>
   ${micErr?'<p class="hint">Mikrofon izni verilmedi, sesin gitmeyecek. Tarayıcı ayarlarından izin verip yeniden bağlan.</p>':''}
-  ${st.role==='kor'?`<label for="rnd">Tur</label><input id="rnd" type="number" min="1" max="99" value="${st.round}" style="width:5em"><button class="go" id="start" ${all?'':'disabled style="opacity:.5"'}>Bombayı başlat</button>${all?'':'<p class="hint">Üç kişi de bağlanınca başlatabilirsin.</p>'}`:'<p class="hint">Herkes bağlanınca Kör Maymun bombayı başlatacak. Konuşmayı şimdiden deneyebilirsiniz.</p>'}</div>`;
+  ${st.role==='kor'?`<label for="rnd">Tur</label><input id="rnd" type="number" min="1" max="99" value="${st.round}" style="width:5em"><button class="go" id="start" ${all?'':'disabled style="opacity:.5"'}>Bombayı başlat</button>${all?'':'<p class="hint">Üç kişi de bağlanınca başlatabilirsin.</p>'}`:'<p class="hint">Herkes bağlanınca Kör Maymun bombayı başlatacak. Konuşmayı şimdiden deneyebilirsiniz.</p>'}</div><div class="card chat"><h3>Sohbet</h3><div id="chatlist" class="chatlist">${chatLog.map(chatRow).join('')||'<p class="hint">Henüz mesaj yok. Oyun sırasında yazılı sohbet kapanır, sesli sohbet rollerin kuralına göre çalışır.</p>'}</div><form id="cf" class="row"><input id="ci" maxlength="200" placeholder="Mesaj yaz…" autocomplete="off"><button>Gönder</button></form></div>`;
+  {const ci=document.getElementById('ci');ci.value=draft;if(foc)ci.focus();const cl2=document.getElementById('chatlist');cl2.scrollTop=cl2.scrollHeight;
+   document.getElementById('cf').onsubmit=ev=>{ev.preventDefault();const x=ci.value.trim().slice(0,200);if(!x)return;const f=st.name||RN[st.role];send({t:'chat',f,x});if(!chatLog.length)cl2.innerHTML='';addChat(f,x);ci.value=''}}
+  document.getElementById('mic').onclick=()=>{selfMute=!selfMute;applyAudio();lobby()};
+  app.querySelectorAll('.rb').forEach(x=>x.onclick=()=>{const r=x.dataset.r;if(r===st.role)return;if(conns[r]&&conns[r].open){myReq=r;send({t:'swq',f:st.role,nm:st.name||''},r);document.getElementById('linfo').textContent=RN[r]+' oyuncusuna takas isteği gönderildi…'}else switchRole(r)});
+  if(swapReq){document.getElementById('swy').onclick=()=>{const f=swapReq.f;send({t:'swa'},f);switchRole(f,400)};document.getElementById('swn').onclick=()=>{send({t:'swn'},swapReq.f);swapReq=null;lobby()}}
   document.getElementById('back').onclick=()=>setup();document.getElementById('prof').onclick=profileView;document.getElementById('pls').onclick=playersView;
   const sb=document.getElementById('start');
   if(sb)sb.onclick=()=>{if(!all)return;st.round=Math.max(1,parseInt(document.getElementById('rnd').value)||1);save();send({t:'go',n:st.round});play()};
@@ -199,6 +220,10 @@ function onData(m){
   else if(m.t==='round'){st.round=m.n;save();if(m.ph==='game'&&m.s){play();S=m.s;draw()}else if(phase!=='setup')lobby()}
   else if(m.t==='lobby'){st.round=m.n;save();lobby()}
   else if(m.t==='h'){heads[m.r]={y:m.y,p:m.p}}
+  else if(m.t==='chat'){const l=document.getElementById('chatlist');if(l&&!chatLog.length)l.innerHTML='';addChat(String(m.f).slice(0,40),String(m.x).slice(0,200));if(phase==='lobby')beep(880,.05,'sine',.06)}
+  else if(m.t==='swq'){swapReq={f:m.f,nm:String(m.nm||'').slice(0,16)};beep(660,.1,'sine',.1);if(phase==='lobby')lobby()}
+  else if(m.t==='swa'){if(myReq)switchRole(myReq)}
+  else if(m.t==='swn'){myReq=null;const i=document.getElementById('linfo');if(i)i.textContent='Takas isteği reddedildi.'}
   else if(m.t==='hi'){profiles[m.r]={n:m.n,c:m.c||{fur:0,hat:0}};seen(m.n,m.r);if(phase==='lobby')lobby()}
   else if(m.t==='throw'&&phase==='game'){fxHook.throw&&fxHook.throw(m.f,m.to,m.i)}
   else if(m.t==='slap'&&phase==='game'){fxHook.slap&&fxHook.slap(m.f,m.to)}
@@ -293,7 +318,7 @@ function doAct(t,i){
   }
 }
 function play(){
-  phase='game';endT=0;b=gen();
+  phase='game';endT=0;applyAudio();b=gen();
   S={pr:0,cz:0,czd:.025,al:0,cut:[],sl:[0,0,0,0],calc:'',cst:0,ys:0,pi:0,bp:'000000000',sw:[0,0,0,0],mz:b.mS,od:[0,0,0,0],ks:0,done:[...Array(11).keys()].filter(i=>!b.act.includes(i)),strikes:0,left:b.time,over:null};
   const role=st.role,head=`<div class="bar"><div>${MKc(role)}<b>${esc(st.name||RN[role])}</b> · oda ${esc(key())} · tur ${st.round}</div>${role==='kor'?'':`<div class="timer" id="t"></div>`}</div>`;
   app.className='wrap'+(role==='kor'?' blind':'');
@@ -323,7 +348,7 @@ function draw(){
   const t=document.getElementById('t');if(t)t.textContent=fmt(S.left)+(st.role==='sagir'?'  ✗'.repeat(S.strikes):'');
 }
 function endView(){
-  clearInterval(timer);phase='end';const win=S.over.win;
+  clearInterval(timer);phase='end';applyAudio();const win=S.over.win;
   if(win)[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.25,'sine',.15),i*150));else beep(60,1.5,'sawtooth',.3);
   app.className='wrap';
   app.innerHTML=`<div class="end" style="color:${win?'#3f3':'var(--r)'}">${win?'İMHA EDİLDİ!':'BOOM!'}</div><p style="text-align:center">${win?'Tebrikler, maymunlar hayatta.':esc(S.over.why)+'. Bir daha deneyin.'}</p>
