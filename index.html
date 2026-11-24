@@ -143,7 +143,8 @@ function setup(err=''){
   <label for="room">Oda kodu</label><div class="row"><input id="room" value="${esc(st.room)}" placeholder="muz42" autocomplete="off"><button id="rnd">🎲 Rastgele</button><button id="cp">🔗 Davet kopyala</button></div>
   <label>Rolünü seç</label><div class="roles">${ROLES.map(([k,n,d])=>`<button class="role" data-r="${k}" aria-pressed="${st.role===k}">${MKc(k,st.cos||{})}<span>${n}<small>${d}</small></span></button>`).join('')}</div>
   <label>Grafik kalitesi</label><div class="row"><button class="q" data-q="h" aria-pressed="${st.q!=='l'}">✨ Yüksek</button><button class="q" data-q="l" aria-pressed="${st.q==='l'}">⚡ Akıcı (tablet için)</button></div>
-  <button class="go" id="go">Odaya bağlan</button><p class="hint" id="err">${esc(err)}</p></div>
+  <button class="go" id="go">Odaya bağlan</button><p class="hint" id="err">${esc(err)}</p>
+  <p class="hint">ℹ️ Bu oyun, oyunun sahibine giriş zamanını, oyun içi adını, oyun sonuçlarını ve cihaz bilgilerini (cihaz türü, işletim sistemi, tarayıcı, ekran) kaydeder. Konum ve IP adresi kaydedilmez.</p></div>
   <details class="card how"><summary>Nasıl oynanır?</summary><ol>
   <li>Üç kişi aynı oda kodunu yazar, herkes farklı bir rol seçer. Kör Maymun bombayı başlatır.</li>
   <li><b>Kör Maymun</b> karanlıkta yalnızca şekilleri ve Braille noktalarını görür, düğmelere o basar. Herkesi duyar.</li>
@@ -154,7 +155,7 @@ function setup(err=''){
   app.querySelectorAll('.q').forEach(x=>x.onclick=()=>{st.q=x.dataset.q;save();app.querySelectorAll('.q').forEach(y=>y.setAttribute('aria-pressed',y===x))});
   document.getElementById('prof').onclick=profileView;document.getElementById('pls').onclick=playersView;
   document.getElementById('rnd').onclick=()=>{const w=['muz','kivi','hindistan','orman','liana','papaya'];document.getElementById('room').value=w[Math.floor(Math.random()*w.length)]+Math.floor(10+Math.random()*90)};
-  document.getElementById('cp').onclick=async()=>{const r=document.getElementById('room').value.trim(),t=`Üç Maymun Bomba'ya gel! ${location.href.split('#')[0]} · Oda kodu: ${r||'(kod yaz)'}`;try{await navigator.clipboard.writeText(t);document.getElementById('err').textContent='Davet kopyalandı, arkadaşlarına yapıştır.'}catch(e){document.getElementById('err').textContent=t}};
+  document.getElementById('cp').onclick=async()=>{const r=document.getElementById('room').value.trim(),t=`Üç Maymun Bomba'ya gel! ${location.origin+location.pathname}?davet=${encodeURIComponent(st.name||'arkadaş')}${r?'&oda='+encodeURIComponent(r):''} · Oda kodu: ${r||'(kod yaz)'}`;try{await navigator.clipboard.writeText(t);document.getElementById('err').textContent='Davet kopyalandı, arkadaşlarına yapıştır.'}catch(e){document.getElementById('err').textContent=t}};
   document.getElementById('go').onclick=()=>{st.room=document.getElementById('room').value;
     if(!key()||!st.role){document.getElementById('err').textContent='Oda kodu (harf/rakam) yazıp bir rol seçin.';return}
     save();connect()};
@@ -173,7 +174,7 @@ async function connect(){
   else try{app.innerHTML='<p class="hint">Mikrofon izni isteniyor… Tarayıcının sorduğu izne "İzin ver" deyin.</p>';stream=await Promise.race([navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}),new Promise((_,j)=>setTimeout(()=>j(0),8000))])}catch(e){micErr=true;stream=ac.createMediaStreamDestination().stream}
   if(typeof Peer==='undefined'){setup('Bağlantı kütüphanesi yüklenemedi. İnterneti kontrol edin.');return}
   app.innerHTML='<p class="hint">Sunucuya bağlanılıyor…</p>';peer=new Peer(pid(st.role),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}});const ot=setTimeout(()=>{if(phase==='setup')setup('Bağlantı sunucusuna ulaşılamadı. Linki Chrome veya telefonun tarayıcısında açın (Claude önizlemesinde değil) ve tekrar deneyin.')},12000);
-  peer.on('open',()=>{clearTimeout(ot);logEv('odaya katıldı');lobby();const me=ORDER.indexOf(st.role);
+  peer.on('open',()=>{clearTimeout(ot);logEv('odaya katıldı',{'Mikrofon':st.role==='dilsiz'?'kapalı (Dilsiz)':micErr?'izin verilmedi':'açık'});lobby();const me=ORDER.indexOf(st.role);
     const tick=()=>ORDER.forEach((r,j)=>{if(j<me&&!(conns[r]&&conns[r].open))reg(peer.connect(pid(r),{reliable:true}))});tick();cl=setInterval(tick,3000)});
   peer.on('connection',reg);
   peer.on('call',call=>{call.answer(stream);hear(call)});
@@ -326,11 +327,18 @@ function endView(){
   app.className='wrap';
   app.innerHTML=`<div class="end" style="color:${win?'#3f3':'var(--r)'}">${win?'İMHA EDİLDİ!':'BOOM!'}</div><p style="text-align:center">${win?'Tebrikler, maymunlar hayatta.':esc(S.over.why)+'. Bir daha deneyin.'}</p>
   ${st.role==='kor'?`<div class="row" style="justify-content:center"><button id="again">Aynı turu tekrar</button><button class="go" style="width:auto;margin:0" id="next">Sonraki tur (${st.round+1})</button></div>`:'<p class="hint" style="text-align:center">Kör Maymun yeni turu seçecek.</p>'}`;
-  fx(win);logEv(win?'oyunu kazandı (tur '+st.round+')':'bomba patladı (tur '+st.round+')');ORDER.forEach(r=>{if(r!==st.role&&profiles[r])seen(profiles[r].n,r,win?'w':'l')});st.games=(st.games||0)+1;if(win)st.wins=(st.wins||0)+1;save();const back=n=>{st.round=n;save();send({t:'lobby',n});lobby()};
+  fx(win);logEv(win?'oyunu kazandı':'bomba patladı',{'Sebep':S.over.why||'','Hata':S.strikes,'Kalan süre (sn)':Math.max(0,S.left),'Çözülen modül':S.done.filter(i=>b.act.includes(i)).length+' / '+b.nm,'Modüller':b.act.map(i=>NAMES[i]).join(', '),'Kaos':b.chaos.join(', ')||'yok','Fırlatma':cnt.th,'Tokat':cnt.sl});ORDER.forEach(r=>{if(r!==st.role&&profiles[r])seen(profiles[r].n,r,win?'w':'l')});st.games=(st.games||0)+1;if(win)st.wins=(st.wins||0)+1;save();const back=n=>{st.round=n;save();send({t:'lobby',n});lobby()};
   if(st.role==='kor'){document.getElementById('again').onclick=()=>back(st.round);document.getElementById('next').onclick=()=>back(st.round+1)}
 }
 const LOG='https://script.google.com/macros/s/AKfycbz6qHlORGAPUakclL4JmgXTU70RCzy9SiCKl4zNTkN4n7Xt7Nkbhhirix51nMAPO1fn/exec';
-const logEv=ev=>{try{fetch(LOG,{method:'POST',mode:'no-cors',body:JSON.stringify({ev,n:st.name||'',r:st.role?RN[st.role]:'',room:key(),dev:/iPad|Tablet|Android|Mobi/i.test(navigator.userAgent)?'Tablet/Telefon':'Bilgisayar'})}).catch(()=>{})}catch(e){}};
+const T0=Date.now(),cnt={th:0,sl:0},QP=new URLSearchParams(location.search),INV=QP.get('davet');let DEV=null;if(QP.get('oda'))st.room=QP.get('oda');
+const devInfo=()=>{const u=navigator.userAgent,os=/HarmonyOS|OpenHarmony/i.test(u)?'HarmonyOS':/Android/i.test(u)?'Android':/iPhone/i.test(u)?'iOS':/iPad/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1)?'iPadOS':/Mac OS X/.test(u)?'macOS':/Windows/.test(u)?'Windows':/Linux/.test(u)?'Linux':'?';
+  const br=/HuaweiBrowser/i.test(u)?'Huawei Browser':/SamsungBrowser/.test(u)?'Samsung Internet':/Edg\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/Firefox\//.test(u)?'Firefox':/CriOS|Chrome\//.test(u)?(navigator.brave?'Brave':'Chrome'):/Safari\//.test(u)?'Safari':'?';
+  let gpu='3D yok';try{const c=document.createElement('canvas').getContext('webgl');if(c){const x=c.getExtension('WEBGL_debug_renderer_info');gpu=x?c.getParameter(x.UNMASKED_RENDERER_WEBGL):'3D var'}}catch(e){}
+  const cn=navigator.connection;return{'Cihaz':/Mobi|iPhone/.test(u)&&!/iPad/.test(u)?'Telefon':(/iPad|Tablet|Android/i.test(u)||os==='iPadOS'||os==='HarmonyOS')?'Tablet':'Bilgisayar','İşletim sistemi':os,'Tarayıcı':br,'Ekran':screen.width+'×'+screen.height,'Pencere':innerWidth+'×'+innerHeight,'Piksel oranı':devicePixelRatio,'Dokunmatik':navigator.maxTouchPoints>0?'evet':'hayır','Dil':navigator.language,'Saat dilimi':Intl.DateTimeFormat().resolvedOptions().timeZone,'İnternet':cn&&cn.effectiveType||'?','Grafik kartı':gpu,'Nereden geldi':document.referrer||'doğrudan link'}};
+const payload=(ev,x={})=>{DEV=DEV||devInfo();const c=st.cos||{};return JSON.stringify(Object.assign({'Olay':ev,'İsim':st.name||'','Rol':st.role?RN[st.role]:'','Oda':key(),'Tur':st.round,'Grafik kalitesi':st.q==='l'?'Akıcı':'Yüksek','Kostüm':FURS[c.fur||0][1]+' / '+HATS[c.hat||0],'Toplam oyun':st.games||0,'Toplam kazanma':st.wins||0,'Sayfada kalma (sn)':Math.round((Date.now()-T0)/1000),'Davetle mi geldi':INV?'evet ('+INV+' davet etti)':'hayır'},DEV,x))};
+const logEv=(ev,x)=>{try{fetch(LOG,{method:'POST',mode:'no-cors',body:payload(ev,x)}).catch(()=>{})}catch(e){}};
+addEventListener('pagehide',()=>{try{navigator.sendBeacon(LOG,payload('sayfadan çıktı',{'Fırlatma':cnt.th,'Tokat':cnt.sl}))}catch(e){}});
 let me={y:0,p:0},hl=0,zoomMod=null,endT=0;const fxHook={},profiles={};
 const cosOf=r=>r===st.role?(st.cos||{fur:0,hat:0}):(profiles[r]&&profiles[r].c)||{fur:0,hat:0};
 const MKc=(r,c=cosOf(r))=>MK(r).replace(/#8a5a33/g,'#'+FURS[c.fur||0][0].toString(16).padStart(6,'0')).replace('</svg>',HSVG[c.hat||0]+'</svg>');
@@ -488,7 +496,7 @@ function scene3d(blind){
   fxHook.slap=(f,to)=>{if(!box.isConnected)return;const m=mates.find(q=>q.userData.r===f);if(m)m.userData.slap=performance.now();else shake=Math.max(shake,.3);setTimeout(()=>hitAt(to,'ŞAPLAK!',0xff6666),250);beep(150,.08,'square',.2)};
   let held=null,hmesh=null,cdT=0;sc.add(cam);
   const hold=k=>{if(hmesh){cam.remove(hmesh);hmesh=null}held=held===k?null:k;if(held!==null){hmesh=itemMesh(k);hmesh.position.set(1.1,-.8,-3);hmesh.scale.setScalar(.9);cam.add(hmesh);beep(700,.06,'sine',.1)}};
-  const hitMate=r=>{const n=performance.now();if(n-cdT<900)return;cdT=n;if(held!==null){send({t:'throw',f:st.role,to:r,i:held});fxHook.throw(st.role,r,held)}else{send({t:'slap',f:st.role,to:r});fxHook.slap(st.role,r)}};
+  const hitMate=r=>{const n=performance.now();if(n-cdT<900)return;cdT=n;if(held!==null){cnt.th++;send({t:'throw',f:st.role,to:r,i:held});fxHook.throw(st.role,r,held)}else{cnt.sl++;send({t:'slap',f:st.role,to:r});fxHook.slap(st.role,r)}};
   const loop=()=>{if(!box.isConnected){R.dispose();return}requestAnimationFrame(loop);
     const now=performance.now(),hot=S.left<=20&&!S.over;
     const yw=-me.y*.4,pt=me.p*.25;if(zoom!==null)mg[zoom].getWorldPosition(cw).y+=.7;else cw.set(0,noB?1:0,noB?-3.5:0);ct.lerp(cw,.12);cd+=((zoom!==null?3.6:D*zf)-cd)*.12;cam.position.set(ct.x+Math.sin(yw)*cd*.92,ct.y+cd*.48-pt*cd*.35,ct.z+Math.cos(yw)*cd*.92);cam.lookAt(ct);g.position.x=hot?Math.sin(now*.09)*.04:0;
