@@ -89,6 +89,12 @@ button:focus-visible{outline:3px solid var(--y);outline-offset:2px}
 .manual{overflow-x:auto}.mzs{display:flex;flex-wrap:wrap;gap:10px}.mzs figure{margin:0;text-align:center}
 .bch{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.bch span{display:grid;justify-items:center;gap:2px;background:#f4efe1;color:#111;border-radius:6px;padding:4px 7px}.bd{margin:8px 0;color:var(--mut)}.bd summary{cursor:pointer;min-height:44px;display:flex;align-items:center}
 .cap{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:8;width:max-content;pointer-events:none;max-width:100%;background:#000c;color:var(--y);padding:8px 16px;border-radius:30px;font-weight:600;opacity:0;transition:opacity .2s}.cap.on{opacity:1}
+body{background:radial-gradient(ellipse at 50% -10%,#3a4a22 0,#1f2414 35%,#16130f 70%)}
+.hero{text-align:center;padding:16px 0 8px}.hero h1{font-size:clamp(32px,8vw,52px)}.sub{color:var(--mut);margin:0 0 12px}
+.trio{display:flex;justify-content:center;align-items:end;gap:8px}.trio .mk{width:72px;height:72px}.bombi{width:92px;height:92px}
+.role{display:flex;align-items:center;gap:10px}.role .mk{width:48px;height:48px;flex:none}
+.q[aria-pressed=true]{background:var(--y);color:#111}.card+.card{margin-top:12px}.how summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}.how li{margin:6px 0}
+@media (prefers-reduced-motion:no-preference){.spark{animation:spk .25s infinite alternate}@keyframes spk{to{r:9;fill:#ff7a00}}.bombi{animation:wob 1.6s ease-in-out infinite}@keyframes wob{50%{transform:rotate(-6deg) scale(1.04)}}.hero h1{animation:zoom .7s cubic-bezier(.3,1.6,.5,1)}}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script></head><body><div class="bubble" id="bub"></div><div class="wrap" id="app"></div>
 <script>{
 const COL={kırmızı:'#e53935',mavi:'#1e63ff',sarı:'#fdd835',yeşil:'#2fa84f',beyaz:'#f2f2f2',siyah:'#151515'};
@@ -119,12 +125,23 @@ const send=(m,to)=>{for(const r in conns)if((!to||to===r)&&conns[r].open)conns[r
 function setup(err=''){
   phase='setup';clearInterval(timer);clearInterval(cl);if(peer){peer.destroy();peer=null}for(const r in conns)delete conns[r];
   if(stream)stream.getTracks().forEach(t=>t.stop());
-  app.innerHTML=`<h1>Üç Maymun Bomba</h1><div class="card">
-  <p class="hint">Üç kişi de aynı oda kodunu yazar ve farklı bir rol seçer. Oyun içinde sesli konuşma var: Kör Maymun herkesi duyar, Sağır Maymun kimseyi duymaz, Dilsiz Maymun duyar ama konuşamaz, sadece işaret yollar.</p>
-  <label for="room">Oda kodu (harf ve rakam)</label><input id="room" value="${esc(st.room)}" placeholder="muz42" autocomplete="off">
-  <label>Rolün</label><div class="roles">${ROLES.map(([k,n,d])=>`<button class="role" data-r="${k}" aria-pressed="${st.role===k}">${n}<small>${d}</small></button>`).join('')}</div>
-  <button class="go" id="go">Odaya bağlan</button><p class="hint" id="err">${esc(err)}</p></div>`;
+  app.innerHTML=`<div class="hero"><div class="trio">${MK('kor')}<svg class="bombi" viewBox="0 0 100 100" aria-hidden="true"><circle cx="46" cy="58" r="34" fill="#2b2b2b"/><circle cx="34" cy="46" r="9" fill="#ffffff22"/><rect x="58" y="18" width="16" height="14" rx="3" fill="#555" transform="rotate(30 66 25)"/><path d="M72 16 Q82 4 92 10" stroke="#c9a46a" stroke-width="3" fill="none"/><circle class="spark" cx="92" cy="10" r="6" fill="#ffcc00"/></svg>${MK('sagir')}${MK('dilsiz')}</div>
+  <h1>Üç Maymun Bomba</h1><p class="sub">Biri göremez, biri duyamaz, biri konuşamaz. Bomba sizi bekler.</p></div>
+  <div class="card">
+  <label for="room">Oda kodu</label><div class="row"><input id="room" value="${esc(st.room)}" placeholder="muz42" autocomplete="off"><button id="rnd">🎲 Rastgele</button><button id="cp">🔗 Davet kopyala</button></div>
+  <label>Rolünü seç</label><div class="roles">${ROLES.map(([k,n,d])=>`<button class="role" data-r="${k}" aria-pressed="${st.role===k}">${MK(k)}<span>${n}<small>${d}</small></span></button>`).join('')}</div>
+  <label>Grafik kalitesi</label><div class="row"><button class="q" data-q="h" aria-pressed="${st.q!=='l'}">✨ Yüksek</button><button class="q" data-q="l" aria-pressed="${st.q==='l'}">⚡ Akıcı (tablet için)</button></div>
+  <button class="go" id="go">Odaya bağlan</button><p class="hint" id="err">${esc(err)}</p></div>
+  <details class="card how"><summary>Nasıl oynanır?</summary><ol>
+  <li>Üç kişi aynı oda kodunu yazar, herkes farklı bir rol seçer. Kör Maymun bombayı başlatır.</li>
+  <li><b>Kör Maymun</b> karanlıkta yalnızca şekilleri ve Braille noktalarını görür, düğmelere o basar. Herkesi duyar.</li>
+  <li><b>Sağır Maymun</b> renkleri, sembolleri ve ekranları görür ve anlatır, ama kimseyi duyamaz.</li>
+  <li><b>Dilsiz Maymun</b> kılavuz kitapçığı okur. Konuşamaz; işaret butonları ve kafasıyla anlatır.</li>
+  <li>Bir modüle dokununca ona yakınlaşırsınız. Süre bitmeden ve 3 hata yapmadan tüm modülleri çözün. Turlar ilerledikçe zor modüller ve Kaos olayları gelir.</li></ol></details>`;
   app.querySelectorAll('.role').forEach(x=>x.onclick=()=>{st.role=x.dataset.r;app.querySelectorAll('.role').forEach(y=>y.setAttribute('aria-pressed',y===x))});
+  app.querySelectorAll('.q').forEach(x=>x.onclick=()=>{st.q=x.dataset.q;save();app.querySelectorAll('.q').forEach(y=>y.setAttribute('aria-pressed',y===x))});
+  document.getElementById('rnd').onclick=()=>{const w=['muz','kivi','hindistan','orman','liana','papaya'];document.getElementById('room').value=w[Math.floor(Math.random()*w.length)]+Math.floor(10+Math.random()*90)};
+  document.getElementById('cp').onclick=async()=>{const r=document.getElementById('room').value.trim(),t=`Üç Maymun Bomba'ya gel! ${location.href.split('#')[0]} · Oda kodu: ${r||'(kod yaz)'}`;try{await navigator.clipboard.writeText(t);document.getElementById('err').textContent='Davet kopyalandı, arkadaşlarına yapıştır.'}catch(e){document.getElementById('err').textContent=t}};
   document.getElementById('go').onclick=()=>{st.room=document.getElementById('room').value;
     if(!key()||!st.role){document.getElementById('err').textContent='Oda kodu (harf/rakam) yazıp bir rol seçin.';return}
     save();connect()};
@@ -301,7 +318,7 @@ addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&phase==='game')se
 function scene3d(blind){
   const T=THREE,noB=st.role==='dilsiz',box=document.createElement('div');box.id='v3';if(noB){box.style.height='42vh';box.style.minHeight='260px'}document.getElementById('v3slot').replaceWith(box);
   const info=document.getElementById('info');if(info)info.textContent+=' Fareyi gezdirerek (tablette sürükleyerek) kafanı çevirirsin. Bir modül ancak ona yakınlaşınca çalışır: modüle dokununca yakınlaşırsın, sonra butonlarına basabilirsin; masadaki boşluğa dokununca uzaklaşırsın. Ses çıkaran modüllerin sesi de yalnızca yakınlaşınca gelir; farenin tekerleği de yakınlaştırır.';
-  const R=new T.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(2,devicePixelRatio));R.shadowMap.enabled=!blind;R.shadowMap.type=T.PCFSoftShadowMap;box.appendChild(R.domElement);
+  const R=new T.WebGLRenderer({antialias:true});R.setPixelRatio(st.q==='l'?1:Math.min(2,devicePixelRatio));R.shadowMap.enabled=!blind&&st.q!=='l';R.shadowMap.type=T.PCFSoftShadowMap;box.appendChild(R.domElement);
   const sc=new T.Scene();sc.background=new T.Color(blind?0x050505:0x2a1d12);sc.fog=new T.Fog(sc.background,18,42);
   const cam=new T.PerspectiveCamera(45,1,.1,100);
   sc.add(new T.HemisphereLight(0xfff3dd,0x221a10,blind?.5:.55));
@@ -315,15 +332,15 @@ function scene3d(blind){
   [[-.25,-3.7],[.4,-3.65]].forEach(([y,z])=>{const d=mesh(new T.CylinderGeometry(.33,.33,7,20),M(0xc0392b,{},0x363636),0,y,z);d.rotation.z=Math.PI/2});
   const tex=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const t=new T.CanvasTexture(c);t.c=c.getContext('2d');return t};
   const planks=(base,n,rep)=>{const t=tex(512,512),k=t.c;k.fillStyle=base;k.fillRect(0,0,512,512);for(let i=0;i<n;i++){const x=i*512/n;k.fillStyle=`rgba(0,0,0,${.05+Math.random()*.15})`;k.fillRect(x,0,512/n,512);k.fillStyle='rgba(0,0,0,.45)';k.fillRect(x,0,3,512);k.strokeStyle='rgba(255,230,180,.07)';for(let j=0;j<6;j++){k.beginPath();const gx=x+8+Math.random()*(512/n-16);k.moveTo(gx,0);k.bezierCurveTo(gx+10,170,gx-10,340,gx+4,512);k.stroke()}}t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep,rep);t.needsUpdate=true;return t};
-  let dust=null,lampG=null;
+  const Cy0=(r,h)=>new T.CylinderGeometry(r,r,h,32),Sp0=r=>new T.SphereGeometry(r,24,16);let dust=null,lampG=null;
   if(!blind){tab.material=new T.MeshStandardMaterial({map:planks('#6b4a2f',8,5),roughness:.75});
     const wall=mesh(new T.PlaneGeometry(60,24),new T.MeshStandardMaterial({map:planks('#5d6b2e',14,4),roughness:.9}),0,8,-14,sc);wall.receiveShadow=true;
-    lampG=new T.Group();lampG.position.set(0,10.5,0);sc.add(lampG);mesh(Cy(.02,4),M(0x111111),0,2,0,lampG);mesh(new T.ConeGeometry(1,.8,32,1,true),M(0x2f4a2a,{side:T.DoubleSide,metalness:.5,roughness:.3}),0,0,0,lampG);mesh(Sp(.25),new T.MeshBasicMaterial({color:0xfff1c1}),0,-.3,0,lampG);
+    lampG=new T.Group();lampG.position.set(0,10.5,0);sc.add(lampG);mesh(Cy0(.02,4),M(0x111111),0,2,0,lampG);mesh(new T.ConeGeometry(1,.8,32,1,true),M(0x2f4a2a,{side:T.DoubleSide,metalness:.5,roughness:.3}),0,0,0,lampG);mesh(Sp0(.25),new T.MeshBasicMaterial({color:0xfff1c1}),0,-.3,0,lampG);
     const spot=new T.SpotLight(0xffe0b0,1.4,32,.8,.55,1);spot.castShadow=true;spot.shadow.mapSize.set(1024,1024);spot.position.set(0,-.3,0);lampG.add(spot);spot.target.position.set(0,-11,0);lampG.add(spot.target);
-    const ban=new T.Group();ban.position.set(5,-.45,4.3);sc.add(ban);for(let i=0;i<5;i++){const bn=mesh(new T.TorusGeometry(.55,.12,10,24,Math.PI*.6),M(0xf2cf2f,{roughness:.6}),0,.12,0,ban);bn.rotation.set(Math.PI/2,0,i*.25-.5);bn.position.x=i*.08}mesh(Cy(.08,.3),M(0x5a4a20),.6,.3,-.1,ban);
+    const ban=new T.Group();ban.position.set(5,-.45,4.3);sc.add(ban);for(let i=0;i<5;i++){const bn=mesh(new T.TorusGeometry(.55,.12,10,24,Math.PI*.6),M(0xf2cf2f,{roughness:.6}),0,.12,0,ban);bn.rotation.set(Math.PI/2,0,i*.25-.5);bn.position.x=i*.08}mesh(Cy0(.08,.3),M(0x5a4a20),.6,.3,-.1,ban);
     const cr=mesh(RB(1.6,1.6,1.6),new T.MeshStandardMaterial({map:planks('#8a6a3a',5,1),roughness:.8}),-7.2,.2,1.5,sc);cr.rotation.y=.4;
-    const pt=new T.Group();pt.position.set(8,-.6,-1.5);sc.add(pt);mesh(new T.CylinderGeometry(.6,.45,1,24),M(0x8a4a2a),0,.5,0,pt);for(let i=0;i<7;i++){const lf=mesh(Sp(.5),M(0x2f8a3a,{roughness:.6}),Math.cos(i)*.5,1.5+i%3*.35,Math.sin(i)*.5,pt);lf.scale.set(.35,1.3,.7);lf.rotation.set(Math.sin(i)*.6,i,Math.cos(i)*.6)}
-    const n=160,pos=new Float32Array(n*3);for(let i=0;i<n*3;i+=3){pos[i]=(Math.random()-.5)*20;pos[i+1]=Math.random()*8;pos[i+2]=(Math.random()-.5)*16}const gd=new T.BufferGeometry();gd.setAttribute('position',new T.BufferAttribute(pos,3));dust=new T.Points(gd,new T.PointsMaterial({color:0xffe2a8,size:.06,transparent:true,opacity:.55}));sc.add(dust)}
+    const pt=new T.Group();pt.position.set(8,-.6,-1.5);sc.add(pt);mesh(new T.CylinderGeometry(.6,.45,1,24),M(0x8a4a2a),0,.5,0,pt);for(let i=0;i<7;i++){const lf=mesh(Sp0(.5),M(0x2f8a3a,{roughness:.6}),Math.cos(i)*.5,1.5+i%3*.35,Math.sin(i)*.5,pt);lf.scale.set(.35,1.3,.7);lf.rotation.set(Math.sin(i)*.6,i,Math.cos(i)*.6)}
+    if(st.q!=='l'){const n=160,pos=new Float32Array(n*3);for(let i=0;i<n*3;i+=3){pos[i]=(Math.random()-.5)*20;pos[i+1]=Math.random()*8;pos[i+2]=(Math.random()-.5)*16}const gd=new T.BufferGeometry();gd.setAttribute('position',new T.BufferAttribute(pos,3));dust=new T.Points(gd,new T.PointsMaterial({color:0xffe2a8,size:.06,transparent:true,opacity:.55}));sc.add(dust)}}
   const ck=tex(256,96),dk=M(0x111111);mesh(new T.BoxGeometry(1.9,.75,.15),[dk,dk,dk,dk,new T.MeshBasicMaterial({map:ck}),dk],0,0,3.45);
   const drawClock=t=>{const k=ck.c;k.fillStyle='#000';k.fillRect(0,0,256,96);k.fillStyle='#ff3b30';k.font='bold 64px monospace';k.textAlign='center';k.fillText(t,128,70);ck.needsUpdate=true};
   const X=[-2.45,0,2.45],Z=[-1.6,1.6],leds=[],pick=[],plates=[],Bx=RB,Sp=r=>new T.SphereGeometry(r,24,16),Cy=(r,h)=>new T.CylinderGeometry(r,r,h,32),hex=c=>parseInt(COL[c].slice(1),16);
