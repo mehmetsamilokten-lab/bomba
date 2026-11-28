@@ -1,5 +1,5 @@
 // Üç Maymun Bomba – uygulama önbelleği
-const V = 'umb-v6';
+const V = 'umb-v9';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable.png', './apple-touch-icon.png'];
 const LIB = /(^|\.)(cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|unpkg\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)$/;
 
