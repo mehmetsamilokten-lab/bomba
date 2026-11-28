@@ -394,8 +394,14 @@ const BR=[[2,4,5],[1],[1,2],[1,4],[1,4,5],[1,5],[1,2,4],[1,2,4,5],[1,2,5],[2,4]]
 const brlSVG=d=>`<svg viewBox="0 0 24 34" width="20" height="28">${[1,2,3,4,5,6].map(k=>`<circle cx="${k>3?17:7}" cy="${7+((k-1)%3)*10}" r="3.6" fill="${BR[d].includes(k)?'#111':'none'}" stroke="#111" stroke-width="1"/>`).join('')}</svg>`;
 const BCH=`<div class="bch">${[1,2,3,4,5,6,7,8,9,0].map(d=>`<span>${brlSVG(d)}<b>${d}</b></span>`).join('')}</div>`;
 const ITEMS=[['muz','🍌',0xf2cf2f],['elma','🍎',0xd32f2f],['şişe','🍾',0x2f8a3a],['lamba','💡',0x3b6bff],['fitil','🧨',0xc62828],['ördek','🦆',0xffd21f],['uçak','✈️',0xf4f4f4],['pasta','🎂',0xf5c6d6]],SEAT={kor:[0,6.3],dilsiz:[0,-6.3],sagir:[6.9,0]},DAT={kor:"Kör'e",sagir:"Sağır'a",dilsiz:"Dilsiz'e"};
-const FURS=[[0x8a5a33,'Kahverengi'],[0xc98a3a,'Altın'],[0x8c8c8c,'Gri'],[0xeeeeee,'Beyaz'],[0x3a2a20,'Koyu'],[0xd35f8a,'Pembe'],[0x3fa34d,'Yeşil'],[0x2f6bff,'Mavi'],[0xd33a2c,'Kırmızı'],[0x7a4bd1,'Mor'],[0xf2cf2f,'Sarı'],[0x1f2a33,'Gece']],SPECIES=['🐵 Maymun','🐦 Kuş','🤖 Robot','🐱 Kedi','🐸 Kurbağa','🐶 Köpek','🦊 Tilki'],SPGLB={0:'@monkey',1:'blob_bird',2:'robot_walker',3:'cat',4:'frog',5:'pug',6:'fox'},HY={1:.55,2:.2,3:.2,4:.2,5:.25,6:.15},HRM={1:.78,2:.62,3:.4,4:.58,5:.42,6:.36},SZ={0:4.6,1:1.5,2:2.6,3:3.0,4:2.6,5:2.6,6:2.5},YO={0:-.35,4:-.35,1:-.1},ROT={1:Math.PI/2,6:-Math.PI/2},DEFC={1:'#2a5bd7',2:'#c96a1a',3:'#e8a25a',4:'#3f8a2f',5:'#c8a070',6:'#d2691e'},NF='https://cdn.jsdelivr.net/npm/@netforge/asset-library-files@0.2.0/library/lowpoly/',GLBC={},loadGLB=n=>GLBC[n]||(GLBC[n]=new Promise((ok,no)=>{if(!THREE.GLTFLoader)return no('loader yok');const l=new THREE.GLTFLoader();if(typeof MeshoptDecoder!=='undefined')l.setMeshoptDecoder(MeshoptDecoder);if(n.startsWith('@monkey_')){try{const bs=atob(MKY.base),ab=new Uint8Array(bs.length);for(let i=0;i<bs.length;i++)ab[i]=bs.charCodeAt(i);l.parse(ab.buffer,'',ok,no)}catch(e){no(e)}return}l.load(NF+n+'.glb',ok,undefined,no)})),HATS=['Yok','Parti şapkası','Taç','Kovboy şapkası','Çiçek','Bere'];
-const HSVG=['','<path d="M38 20 L50 0 L62 20Z" fill="#e53935"/><circle cx="50" cy="2" r="4" fill="#ffcc00"/>','<path d="M32 22 L32 8 L41 16 L50 4 L59 16 L68 8 L68 22Z" fill="#ffcc00"/>','<ellipse cx="50" cy="20" rx="32" ry="5" fill="#7a4a22"/><rect x="36" y="4" width="28" height="17" rx="6" fill="#8a5a2a"/>','<g fill="#ff5c8a"><circle cx="64" cy="18" r="5"/><circle cx="74" cy="18" r="5"/><circle cx="69" cy="12" r="5"/><circle cx="69" cy="24" r="5"/></g><circle cx="69" cy="18" r="3.5" fill="#ffcc00"/>','<path d="M22 28 Q50 -6 78 28Z" fill="#1e63ff"/><circle cx="50" cy="5" r="5" fill="#fff"/>'];
+const FURS=[[0x8a5a33,'Kahverengi'],[0xc98a3a,'Altın'],[0x8c8c8c,'Gri'],[0xeeeeee,'Beyaz'],[0x3a2a20,'Koyu'],[0xd35f8a,'Pembe'],[0x3fa34d,'Yeşil'],[0x2f6bff,'Mavi'],[0xd33a2c,'Kırmızı'],[0x7a4bd1,'Mor'],[0xf2cf2f,'Sarı'],[0x1f2a33,'Gece']],SPECIES=['🐵 Maymun','🐦 Kuş','🤖 Robot','🐱 Kedi','🐸 Kurbağa','🐶 Köpek','🦊 Tilki'],SPGLB={0:'@monkey',1:'blob_bird',2:'robot_walker',3:'cat',4:'frog',5:'pug',6:'fox'},HY={1:.55,2:.2,3:.2,4:.2,5:.25,6:.15},HRM={1:.78,2:.62,3:.4,4:.58,5:.42,6:.36},SZ={0:4.6,1:1.5,2:2.6,3:3.0,4:2.6,5:2.6,6:2.5},YO={0:-.35,4:-.35,1:-.1},ROT={1:Math.PI/2,6:-Math.PI/2},DEFC={1:'#2a5bd7',2:'#c96a1a',3:'#e8a25a',4:'#3f8a2f',5:'#c8a070',6:'#d2691e'},NF='https://cdn.jsdelivr.net/npm/@netforge/asset-library-files@0.2.0/library/lowpoly/',GLBC={},loadGLB=n=>GLBC[n]||(GLBC[n]=new Promise((ok,no)=>{if(!THREE.GLTFLoader)return no('loader yok');const l=new THREE.GLTFLoader();if(typeof MeshoptDecoder!=='undefined')l.setMeshoptDecoder(MeshoptDecoder);if(n.startsWith('@monkey_')){try{const bs=atob(MKY.base),ab=new Uint8Array(bs.length);for(let i=0;i<bs.length;i++)ab[i]=bs.charCodeAt(i);l.parse(ab.buffer,'',ok,no)}catch(e){no(e)}return}l.load(NF+n+'.glb',ok,undefined,no)})),HATS=['Yok','Parti şapkası','Taç','Kovboy şapkası','Çiçek','Bere','Beyzbol şapkası','Pervaneli şapka','Silindir şapka','Aşçı şapkası','Viking kaskı','Fes'];
+const HSVG=['','<path d="M38 20 L50 0 L62 20Z" fill="#e53935"/><circle cx="50" cy="2" r="4" fill="#ffcc00"/>','<path d="M32 22 L32 8 L41 16 L50 4 L59 16 L68 8 L68 22Z" fill="#ffcc00"/>','<ellipse cx="50" cy="20" rx="32" ry="5" fill="#7a4a22"/><rect x="36" y="4" width="28" height="17" rx="6" fill="#8a5a2a"/>','<g fill="#ff5c8a"><circle cx="64" cy="18" r="5"/><circle cx="74" cy="18" r="5"/><circle cx="69" cy="12" r="5"/><circle cx="69" cy="24" r="5"/></g><circle cx="69" cy="18" r="3.5" fill="#ffcc00"/>','<path d="M26 20 Q28 4 54 5 Q78 6 76 17 Q62 23 26 20Z" fill="#22306e"/><rect x="49" y="1" width="3" height="5" fill="#22306e"/>',
+ '<path d="M30 22 Q50 2 70 22Z" fill="#e53935"/><path d="M60 21 Q80 19 86 25 L62 25Z" fill="#b71c1c"/><circle cx="50" cy="8" r="2.5" fill="#fff"/>',
+ '<path d="M32 22 Q50 4 68 22Z" fill="#ffcc00"/><path d="M42 21 Q50 5 58 21Z" fill="#e53935"/><rect x="49" y="2" width="2" height="7" fill="#333"/><ellipse cx="42" cy="2.5" rx="8" ry="2" fill="#2f6bff"/><ellipse cx="58" cy="2.5" rx="8" ry="2" fill="#3fa34d"/>',
+ '<rect x="38" y="0" width="24" height="20" rx="2" fill="#1d1d24"/><rect x="38" y="14" width="24" height="4" fill="#e53935"/><ellipse cx="50" cy="21" rx="20" ry="3.5" fill="#1d1d24"/>',
+ '<rect x="36" y="12" width="28" height="10" fill="#fff" stroke="#ddd"/><circle cx="40" cy="10" r="7" fill="#fff"/><circle cx="50" cy="7" r="8" fill="#fff"/><circle cx="60" cy="10" r="7" fill="#fff"/>',
+ '<path d="M30 22 Q50 2 70 22Z" fill="#9aa3ad"/><rect x="30" y="18" width="40" height="4" fill="#6b4a1c"/><path d="M32 17 Q20 12 22 1 Q28 10 37 13Z" fill="#f3e5c0"/><path d="M68 17 Q80 12 78 1 Q72 10 63 13Z" fill="#f3e5c0"/>',
+ '<path d="M39 22 L42 5 L58 5 L61 22Z" fill="#c62828"/><path d="M50 5 Q57 8 58 16" stroke="#111" stroke-width="2" fill="none"/><circle cx="58" cy="17" r="2" fill="#111"/>'];
 const MORSE=['-----','.----','..---','...--','....-','.....','-....','--...','---..','----.'];
 const RULES=['Braille sayısı tekse YUKARI','Braille sayısı 1, 2, 6 veya 9 ise YUKARI',"Braille sayısı 5'ten büyükse YUKARI",'Braille sayısı kırmızı lambanın altındakinden büyükse YUKARI'];
 const ROLES=[['kor','Kör Maymun','Bombaya dokunur ama göremez'],['sagir','Sağır Maymun','Bombayı görür ama duyamaz'],['dilsiz','Dilsiz Maymun','Kılavuzu okur ama konuşamaz']];
@@ -409,13 +415,17 @@ let st={room:'',round:1,role:null};
 try{Object.assign(st,JSON.parse(localStorage.getItem('bomba')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('bomba',JSON.stringify(st))}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
-const key=()=>st.room.trim().toLowerCase().replace(/[^a-z0-9]/g,'');
+const key=()=>String(st.room||'').trim().replace(/[İIı]/g,'i').toLowerCase().replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c').replace(/â/g,'a').replace(/[^a-z0-9]/g,'');
 function rng(s){let a=7;for(const c of s)a=Math.imul(a^c.charCodeAt(0),2654435761);return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const shuf=(arr,r)=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-let ac,timer,cl,peer,stream,micErr=false,phase='setup',b,S;const conns={},auds={};
+let REJ=false;const LIVE={set(){try{sessionStorage.setItem('umb_live',JSON.stringify({t:Date.now(),room:st.room,role:st.role}))}catch(e){}},clr(){try{sessionStorage.removeItem('umb_live')}catch(e){}},get(){try{const v=JSON.parse(sessionStorage.getItem('umb_live')||'null');return v&&Date.now()-v.t<20*60000&&v.room&&v.role?v:null}catch(e){return null}}};
+let ac,timer,cl,peer,stream,micErr=false,phase='setup',b,S,streamP=Promise.resolve(null),ICEUSE=null,joinT=0;
+const ICE=[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:global.stun.twilio.com:3478'}];
+// İsteğe bağlı TURN sunucusu (farklı internetlerden bağlanmak için): Metered.ca'dan alınan adres buraya yazılır
+const TURN_API='';let iceP=null;const getIce=()=>iceP||(iceP=TURN_API?fetch(TURN_API).then(r=>r.json()).then(a=>Array.isArray(a)?ICE.concat(a):ICE).catch(()=>ICE):Promise.resolve(ICE));const conns={},auds={};
 const pid=r=>'ucmaymun-'+key()+'-'+r,roleOf=id=>id.split('-').pop();
 const send=(m,to)=>{for(const r in conns)if((!to||to===r)&&conns[r].open)conns[r].send(m)};
-function setup(err=''){
+function setup(err=''){LIVE.clr();
   phase='setup';clearInterval(timer);clearInterval(cl);if(peer){peer.destroy();peer=null}for(const r in conns)delete conns[r];
   if(stream)stream.getTracks().forEach(t=>t.stop());
   const I=(d)=>`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`,
@@ -457,27 +467,31 @@ const ans={},heads={};let lastG=null;const BKS={kor:0,sagir:0,dilsiz:0};
 function talking(r){const a=ans[r];if(!a)return false;const d=new Uint8Array(a.fftSize);a.getByteTimeDomainData(d);let m=0;for(const x of d)m=Math.max(m,Math.abs(x-128));return m>12}
 function hear(call){call.on('stream',s=>{const r=roleOf(call.peer);const a=auds[r]||(auds[r]=new Audio());a.srcObject=s;a.muted=phase==='game'&&st.role==='sagir';a.play().catch(()=>{});try{const an=ac.createAnalyser();an.fftSize=256;ac.createMediaStreamSource(s).connect(an);ans[r]=an}catch(e){}})}
 function reg(c){const r=roleOf(c.peer);
-  c.on('open',()=>{conns[r]=c;c.send({t:'hi',r:st.role,n:st.name||'',c:st.cos||{fur:0,hat:0}});c.send({t:'rdy',r:st.role,v:!!ready[st.role]});if(ORDER.indexOf(st.role)>ORDER.indexOf(r))hear(peer.call(c.peer,stream));if(phase==='lobby')lobby();if(st.role==='kor'&&phase!=='setup')c.send({t:'round',n:st.round,ph:phase,s:S})});
+  c.on('open',()=>{conns[r]=c;c.send({t:'hi',r:st.role,n:st.name||'',c:st.cos||{fur:0,hat:0}});c.send({t:'rdy',r:st.role,v:!!ready[st.role]});if(ORDER.indexOf(st.role)>ORDER.indexOf(r))streamP.then(sm=>{if(peer&&c.open&&sm)hear(peer.call(c.peer,sm))});if(phase==='lobby')lobby();if(phase==='game'&&S&&!S.over)c.send({t:'round',n:st.round,ph:'game',s:S});else if(st.role==='kor'&&phase==='lobby'&&!REJ)c.send({t:'round',n:st.round,ph:'lobby'})});
   c.on('data',onData);c.on('close',()=>{if(conns[r]===c)delete conns[r];if(phase==='lobby')lobby()})}
 let joined=false,selfMute=false,ready={},swapReq=null,myReq=null;const chatLog=[];
 function applyAudio(){const g=phase==='game'&&!!(S&&S.open);for(const r in auds)auds[r].muted=g&&st.role==='sagir';if(stream)stream.getAudioTracks().forEach(t=>t.enabled=!selfMute&&!(g&&st.role==='dilsiz'))}
 async function connect(){
-  app.innerHTML='<p class="hint">Bağlanılıyor…</p>';
-  try{ac=ac||new AudioContext();await ac.resume()}catch(e){}
-  micErr=false;joined=false;
-  try{app.innerHTML='<p class="hint">Mikrofon izni isteniyor… Tarayıcının sorduğu izne "İzin ver" deyin.</p>';stream=await Promise.race([navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}),new Promise((_,j)=>setTimeout(()=>j(0),8000))])}catch(e){micErr=true;stream=ac.createMediaStreamDestination().stream}
+  app.innerHTML='<p class="hint">Bağlanılıyor… Tarayıcı mikrofon izni sorarsa "İzin ver" deyin.</p>';
+  try{ac=ac||new AudioContext();ac.resume().catch(()=>{})}catch(e){}
+  micErr=false;joined=false;stream=null;LIVE.set();if(REJ)setTimeout(()=>{REJ=false},8000);
+  streamP=(async()=>{try{stream=await Promise.race([navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}),new Promise((_,j)=>setTimeout(()=>j(0),12000))])}catch(e){micErr=true;try{stream=ac.createMediaStreamDestination().stream}catch(x){stream=null}}applyAudio();if(phase==='lobby')lobby();return stream})();
   if(typeof Peer==='undefined'){setup('Bağlantı kütüphanesi yüklenemedi. İnterneti kontrol edin.');return}
+  ICEUSE=await Promise.race([getIce(),new Promise(r=>setTimeout(()=>r(ICE),2500))]);
   startPeer(0);
 }
 function startPeer(retry,swapping){
   app.innerHTML='<p class="hint">'+(swapping?'Rol değiştiriliyor…':'Sunucuya bağlanılıyor…')+'</p>';
-  peer=new Peer(pid(st.role),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}});
+  peer=new Peer(pid(st.role),{config:{iceServers:ICEUSE||ICE,iceCandidatePoolSize:4}});const att={};
   const ot=setTimeout(()=>{if(phase==='setup'&&!joined)setup('Bağlantı sunucusuna ulaşılamadı. Linki Chrome veya telefonun tarayıcısında açın (Claude önizlemesinde değil) ve tekrar deneyin.')},12000);
   peer.on('open',()=>{clearTimeout(ot);if(!joined){joined=true;logEv('odaya katıldı',{'Mikrofon':micErr?'izin verilmedi':'açık'})}lobby();const me=ORDER.indexOf(st.role);
-    const tick=()=>ORDER.forEach((r,j)=>{if(j<me&&!(conns[r]&&conns[r].open))reg(peer.connect(pid(r),{reliable:true}))});tick();clearInterval(cl);cl=setInterval(tick,3000)});
+    joinT=performance.now();const tick=()=>{if(!peer||peer.destroyed)return;const n=performance.now();ORDER.forEach((r,j)=>{if(j!==me&&(j<me||n-joinT>2500)&&!(conns[r]&&conns[r].open)){const a=att[r];if(a&&a.c&&!a.c.open&&n-a.t<4000)return;if(a&&a.c)try{a.c.close()}catch(e){}const c=peer.connect(pid(r),{reliable:true});att[r]={c,t:n};reg(c)}});
+      if(phase==='lobby'&&n-joinT>15000){const miss=ORDER.filter(r=>r!==st.role&&!(conns[r]&&conns[r].open)),i=document.getElementById('linfo');if(i&&miss.length&&!i.dataset.w){i.dataset.w=1;i.textContent+=' Diğer oyuncular gelmedi mi? Hepinizin oda kodu "'+key()+'" olmalı ve herkes farklı rol seçmeli. Farklı internetlerdeyseniz (biri mobil veride) bağlantı uzun sürebilir.'}}};
+    tick();clearInterval(cl);cl=setInterval(tick,1000)});
+  peer.on('disconnected',()=>{setTimeout(()=>{try{if(peer&&!peer.destroyed&&peer.disconnected)peer.reconnect()}catch(e){}},700)});
   peer.on('connection',reg);
-  peer.on('call',call=>{call.answer(stream);hear(call)});
-  peer.on('error',ev=>{if(ev.type==='unavailable-id'){if(swapping&&retry<8){clearTimeout(ot);try{peer.destroy()}catch(x){}setTimeout(()=>startPeer(retry+1,true),1500)}else{clearTimeout(ot);setup('Bu odada bu rol zaten alınmış. Başka rol seçin.')}}else if(ev.type!=='peer-unavailable'&&phase==='setup'&&!joined)setup('Bağlantı hatası ('+ev.type+'). Biraz bekleyip tekrar deneyin.')});
+  peer.on('call',call=>{streamP.then(sm=>{try{call.answer(sm||undefined);hear(call)}catch(e){}})});
+  peer.on('error',ev=>{if(ev.type==='peer-unavailable'){const m=/ucmaymun-[a-z0-9]+-([a-z]+)/.exec(ev.message||'');if(m&&att[m[1]])att[m[1]].t=0;return}if(ev.type==='unavailable-id'){if(retry<(swapping?8:6)){clearTimeout(ot);try{peer.destroy()}catch(x){}app.innerHTML='<p class="hint">Önceki bağlantın kapanıyor, tekrar deneniyor… ('+(retry+1)+')</p>';setTimeout(()=>startPeer(retry+1,swapping),1500)}else{clearTimeout(ot);setup('Bu odada bu rol zaten alınmış. Başka rol seçin ya da birkaç saniye sonra tekrar deneyin.')}}else if(ev.type!=='peer-unavailable'&&phase==='setup'&&!joined)setup('Bağlantı hatası ('+ev.type+'). Biraz bekleyip tekrar deneyin.')});
 }
 function switchRole(nr,delay=0){setTimeout(()=>{clearInterval(cl);if(peer){peer.destroy();peer=null}for(const r in conns)delete conns[r];for(const r in auds){auds[r].pause();delete auds[r]}for(const r in ans)delete ans[r];for(const r in profiles)delete profiles[r];
   st.role=nr;save();swapReq=null;for(const k in ready)delete ready[k];myReq=null;phase='setup';app.innerHTML='<p class="hint">Rol değiştiriliyor…</p>';setTimeout(()=>startPeer(0,true),1200)},delay)}
@@ -523,7 +537,7 @@ function onData(m){
   if(m.t==='rdy'){ready[String(m.r)]=!!m.v;if(phase==='lobby')lobby()}
   else if(m.t==='go'){ORDER.forEach(r=>ready[r]=false);st.round=m.n;save();play()}
   else if(m.t==='st'&&phase==='game'){S=m.s;draw()}
-  else if(m.t==='round'){st.round=m.n;save();if(m.ph==='game'&&m.s){play();S=m.s;draw()}else if(phase!=='setup')lobby()}
+  else if(m.t==='round'){if(m.ph==='game'&&m.s){if(phase==='game'&&st.role==='kor'&&!REJ)return;const was=phase==='game'&&st.round===m.n;st.round=m.n;save();if(!was)play();S=m.s;REJ=false;draw();if(!was)hitText('↻ Oyuna geri döndün')}else if(phase==='lobby'){st.round=m.n;save();lobby()}}
   else if(m.t==='lobby'){st.round=m.n;save();lobby()}
   else if(m.t==='h'){heads[m.r]={y:m.y,p:m.p}}
   else if(m.t==='chat'){const l=document.getElementById('chatlist');if(l&&!chatLog.length)l.innerHTML='';addChat(String(m.f).slice(0,40),String(m.x).slice(0,200));if(phase==='lobby')beep(880,.05,'sine',.06)}
@@ -631,7 +645,7 @@ function doAct(t,i){
   }
 }
 function play(){
-  phase='game';endT=0;applyAudio();b=gen();
+  phase='game';LIVE.set();endT=0;applyAudio();b=gen();
   S={open:false,uc:0,pr:0,cz:0,czd:.025,al:0,cut:[],sl:[0,0,0,0],calc:'',cst:0,ys:0,pi:0,bp:'000000000',sw:[0,0,0,0],mz:b.mS,od:[0,0,0,0],ks:0,done:[...Array(NAMES.length).keys()].filter(i=>!b.act.includes(i)),strikes:0,left:b.time,over:null};
   const role=st.role,head=`<div class="bar"><div>${MKc(role)}<b>${esc(st.name||RN[role])}</b> · oda ${esc(key())} · tur ${st.round}</div>${role==='kor'?'':`<div class="timer" id="t"></div>`}</div>`;
   app.className='wrap g3';
@@ -733,12 +747,20 @@ const accRole=(T,mdl,role)=>{const g=new T.Group();g.userData.acc=1;const Mx=(c,
     [-1,1].forEach(sx=>{const cu=ms(new T.CylinderGeometry(.3,.3,.2,32),rd,sx*1.02,.2,.02);cu.rotation.z=Math.PI/2;const pd=ms(new T.CylinderGeometry(.24,.24,.06,28),Mx(0x1a1a1a,{roughness:.9}),sx*.9,.2,.02);pd.rotation.z=Math.PI/2;const cap=ms(new T.CylinderGeometry(.18,.18,.04,24),Mx(0xeeeeee,{metalness:.6,roughness:.3}),sx*1.13,.2,.02);cap.rotation.z=Math.PI/2})}
   else if(role==='dilsiz'){const tp=Mx(0xe53935,{roughness:.65});[.42,-.42].forEach(a=>{const t=ms(new T.BoxGeometry(.5,.11,.025),tp,0,-.02,.6);t.rotation.set(-.12,0,a)})}
   mdl.add(g);return g};
-const hatGroup=(T,hh)=>{const g=new T.Group(),Mx=(c,o={})=>{const m=new T.MeshStandardMaterial(Object.assign({color:c,roughness:.5},o));m.color.convertSRGBToLinear();return m},ms=(geo,m,x,y,z)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o};
-  if(hh===1){ms(new T.ConeGeometry(.35,.8,20),Mx(0xe53935),0,1.15,0);ms(new T.SphereGeometry(.09,10,8),Mx(0xffcc00),0,1.58,0)}
-  else if(hh===2){ms(new T.CylinderGeometry(.42,.42,.25,16,1,true),Mx(0xffcc00,{side:T.DoubleSide,metalness:.7,roughness:.3}),0,.92,0);for(let i=0;i<5;i++){const a=i/5*Math.PI*2;ms(new T.ConeGeometry(.08,.22,8),Mx(0xffcc00),Math.cos(a)*.4,1.12,Math.sin(a)*.4)}}
-  else if(hh===3){ms(new T.CylinderGeometry(1.1,1.1,.05,28),Mx(0x7a4a22),0,.75,0);ms(new T.CylinderGeometry(.5,.55,.5,24),Mx(0x8a5a2a),0,1.0,0)}
-  else if(hh===4){[[0,.12],[.12,0],[0,-.12],[-.12,0]].forEach(([a,c])=>ms(new T.SphereGeometry(.1,10,8),Mx(0xff5c8a),.55+a,.6+c,.4));ms(new T.SphereGeometry(.08,10,8),Mx(0xffcc00),.55,.6,.47)}
-  else if(hh===5){ms(new T.SphereGeometry(.88,24,12,0,Math.PI*2,0,Math.PI/2),Mx(0x1e63ff),0,.12,0);ms(new T.SphereGeometry(.15,10,8),Mx(0xffffff),0,1.0,0)}return g};
+const hatGroup=(T,hh)=>{const g0=new T.Group(),g=new T.Group();g0.add(g);g.scale.setScalar(1.32);g.position.y=-.44;g.userData.fit=1;const ret=g0,Mx=(c,o={})=>{const m=new T.MeshStandardMaterial(Object.assign({color:c,roughness:.55},o));m.color.convertSRGBToLinear();return m},ms=(geo,m,x,y,z,p=g)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;p.add(o);return o},grp=(x,y,z,p=g)=>{const q=new T.Group();q.position.set(x,y,z);p.add(q);return q},PI=Math.PI;
+  if(hh===1){const q=grp(.1,.66,0);q.rotation.z=-.22;ms(new T.ConeGeometry(.33,.85,24),Mx(0xe53935),0,.42,0,q);const st=Mx(0xffcc00);for(let i=0;i<3;i++)ms(new T.TorusGeometry(.33-i*.1-.04,.025,6,24),st,0,.12+i*.24,0,q).rotation.x=PI/2;ms(new T.SphereGeometry(.1,12,10),Mx(0xffcc00),0,.88,0,q)}
+  else if(hh===2){const gold=Mx(0xffcc00,{metalness:.75,roughness:.28});ms(new T.CylinderGeometry(.6,.56,.28,32,1,true),Mx(0xffcc00,{side:T.DoubleSide,metalness:.75,roughness:.28}),0,.8,0);for(let i=0;i<8;i++){const a=i/8*PI*2;ms(new T.ConeGeometry(.08,.26,8),gold,Math.cos(a)*.59,1.07,Math.sin(a)*.59);ms(new T.SphereGeometry(.055,8,6),Mx([0xe53935,0x2f6bff,0x3fa34d][i%3],{roughness:.2}),Math.cos(a)*.6,.8,Math.sin(a)*.6)}}
+  else if(hh===3){const b=Mx(0x8a5a2a),bd=Mx(0x5a3416);const br=ms(new T.CylinderGeometry(1.25,1.25,.05,36),b,0,.56,0);br.scale.set(1,1,.9);ms(new T.CylinderGeometry(.66,.79,.5,28),b,0,.82,0);ms(new T.CylinderGeometry(.795,.8,.1,28),bd,0,.62,0);const dt=ms(new T.SphereGeometry(.4,16,10,0,PI*2,0,PI/2),b,0,1.06,0);dt.scale.set(1.6,.35,1.4)}
+  else if(hh===4){const q=grp(.62,.5,.2);q.rotation.set(-.2,.6,-.3);const pm=Mx(0xff5c8a,{roughness:.4});for(let i=0;i<5;i++){const a=i/5*PI*2,pt=ms(new T.SphereGeometry(.13,12,10),pm,Math.cos(a)*.15,Math.sin(a)*.15,0,q);pt.scale.set(1,1,.45)}ms(new T.SphereGeometry(.09,12,10),Mx(0xffcc00),0,0,.04,q);const lf=ms(new T.SphereGeometry(.12,10,8),Mx(0x3fa34d),-.2,-.2,-.03,q);lf.scale.set(1.4,.5,.3);lf.rotation.z=.7}
+  else if(hh===5){const q=grp(.12,.74,-.02);q.rotation.set(.08,0,-.28);const bm=Mx(0x22306e,{roughness:.85});const t=ms(new T.SphereGeometry(.88,30,16),bm,0,0,0,q);t.scale.set(1,.3,.96);ms(new T.TorusGeometry(.74,.06,8,32),bm,0,-.12,0,q).rotation.x=PI/2;ms(new T.CylinderGeometry(.03,.05,.14,8),bm,0,.31,0,q)}
+  else if(hh===6){const red=Mx(0xe53935),q=grp(0,.5,0);const d=ms(new T.SphereGeometry(.8,28,14,0,PI*2,0,PI/2),red,0,0,0,q);d.scale.set(1,.72,1);const v=ms(new T.CylinderGeometry(.62,.62,.05,28,1,false,-PI/2,PI),Mx(0xb71c1c),0,.04,.48,q);v.rotation.x=.12;v.scale.set(1,1,1.05);ms(new T.SphereGeometry(.07,10,8),Mx(0xffffff),0,.58,0,q);ms(new T.TorusGeometry(.79,.03,6,32),Mx(0xffffff),0,.02,0,q).rotation.x=PI/2}
+  else if(hh===7){const q=grp(0,.52,0),C=[0xffcc00,0xe53935,0x2f6bff,0x3fa34d];for(let i=0;i<4;i++){const d=ms(new T.SphereGeometry(.78,14,12,i*PI/2,PI/2,0,PI/2),Mx(C[i]),0,0,0,q);d.scale.set(1,.68,1)}ms(new T.CylinderGeometry(.03,.03,.32,8),Mx(0x333333),0,.66,0,q);const pr=grp(0,.82,0,q);ms(new T.SphereGeometry(.06,10,8),Mx(0xe53935),0,0,0,pr);[0,PI].forEach((a,i)=>{const bl=ms(new T.BoxGeometry(.6,.02,.13),Mx(i?0x3fa34d:0x2f6bff),Math.cos(a)*.3,0,Math.sin(a)*.3,pr);bl.rotation.x=.25*(i?-1:1)});pr.children[0].onBeforeRender=()=>{pr.rotation.y+=.18}}
+  else if(hh===8){const bk=Mx(0x1d1d24,{roughness:.4});ms(new T.CylinderGeometry(.96,.96,.05,32),bk,0,.62,0);ms(new T.CylinderGeometry(.52,.55,1.0,28),bk,0,1.12,0);ms(new T.CylinderGeometry(.556,.556,.16,28),Mx(0xe53935),0,.74,0)}
+  else if(hh===9){const w=Mx(0xffffff,{roughness:.85});ms(new T.CylinderGeometry(.66,.7,.34,28),w,0,.76,0);[[0,1.22,0,.42],[.32,1.12,.1,.32],[-.32,1.12,.1,.32],[0,1.12,-.3,.32],[.2,1.08,.32,.28],[-.2,1.08,.32,.28]].forEach(([x,y,z,r])=>ms(new T.SphereGeometry(r,16,12),w,x,y,z))}
+  else if(hh===10){const st=Mx(0x9aa3ad,{metalness:.7,roughness:.35}),q=grp(0,.44,0);const d=ms(new T.SphereGeometry(.82,28,14,0,PI*2,0,PI/2),st,0,0,0,q);d.scale.set(1,.85,1);ms(new T.TorusGeometry(.8,.07,8,32),Mx(0x6b4a1c),0,.05,0,q).rotation.x=PI/2;ms(new T.BoxGeometry(.1,.6,.07),Mx(0x6b4a1c),0,.3,.8,q).rotation.x=-.25;
+    [-1,1].forEach(sx=>{const h=grp(sx*.72,.35,0,q);for(let i=0;i<5;i++){const t=i/4,sg=ms(new T.CylinderGeometry(.14*(1-t)+.03,.14*(1-t*.8)+.05,.22,12),Mx(0xf3e5c0),sx*(.1+t*t*.35+t*.12),t*.55+t*t*.1,0,h);sg.rotation.z=-sx*(1.2-t*1.1)}})}
+  else if(hh===11){const f=Mx(0xc62828,{roughness:.7});ms(new T.CylinderGeometry(.52,.66,.66,28),f,0,.86,0);ms(new T.CylinderGeometry(.06,.06,.04,10),Mx(0x111111),0,1.2,0);const ts=grp(0,1.2,0);const c=ms(new T.CylinderGeometry(.02,.02,.42,6),Mx(0x111111),.16,-.18,.0,ts);c.rotation.z=.75;ms(new T.ConeGeometry(.07,.22,10),Mx(0x111111),.3,-.4,0,ts)}
+  return ret};
 const prev3D=el=>{const T=window.THREE;if(!T||!T.GLTFLoader)return null;let R;try{R=new T.WebGLRenderer({antialias:true,alpha:true})}catch(e){return null}
   R.setPixelRatio(Math.min(2,devicePixelRatio));R.outputEncoding=T.sRGBEncoding;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.05;R.shadowMap.enabled=true;el.appendChild(R.domElement);
   const sc=new T.Scene(),cam=new T.PerspectiveCamera(30,1,.1,60);cam.position.set(0,2.1,9.2);cam.lookAt(0,1.05,0);
@@ -909,12 +931,7 @@ function scene3d(blind){
     const[x,y]=ce(S.mz);k.fillStyle='#1e63ff';k.beginPath();k.arc(x,y,13,0,7);k.fill();B.mt.needsUpdate=true};
   const drawDials=()=>{const k=B.ot.c;k.fillStyle='#111';k.fillRect(0,0,256,64);k.fillStyle='#ffcc00';k.font='bold 44px monospace';k.textAlign='center';S.od.forEach((d,i)=>k.fillText(d,(i*.5+.2)/1.9*256,48));B.ot.needsUpdate=true};
   const vis=o=>{for(let q=o;q;q=q.parent)if(!q.visible)return false;return true},press=pick.filter(o=>o.userData.y0!==undefined),MS=mseg(b.oD);
-  const hatName=(r,hd,m,top)=>{const hh=cosOf(r).hat||0,HM=c=>M(c,{},0x777777);
-     if(hh===1){mesh(new T.ConeGeometry(.35,.8,20),HM(0xe53935),0,1.15,0,hd);mesh(new T.SphereGeometry(.09,10,8),HM(0xffcc00),0,1.58,0,hd)}
-     else if(hh===2){mesh(new T.CylinderGeometry(.42,.42,.25,16,1,true),M(0xffcc00,{side:T.DoubleSide,metalness:.7,roughness:.3},0x777777),0,.92,0,hd);for(let i=0;i<5;i++){const a=i/5*Math.PI*2;mesh(new T.ConeGeometry(.08,.22,8),HM(0xffcc00),Math.cos(a)*.4,1.12,Math.sin(a)*.4,hd)}}
-     else if(hh===3){mesh(new T.CylinderGeometry(1.1,1.1,.05,28),HM(0x7a4a22),0,.75,0,hd);mesh(new T.CylinderGeometry(.5,.55,.5,24),HM(0x8a5a2a),0,1.0,0,hd)}
-     else if(hh===4){[[0,.12],[.12,0],[0,-.12],[-.12,0]].forEach(([a,c])=>mesh(new T.SphereGeometry(.1,10,8),HM(0xff5c8a),.55+a,.6+c,.4,hd));mesh(new T.SphereGeometry(.08,10,8),HM(0xffcc00),.55,.6,.47,hd)}
-     else if(hh===5){mesh(new T.SphereGeometry(.88,24,12,0,Math.PI*2,0,Math.PI/2),HM(0x1e63ff),0,.12,0,hd);mesh(new T.SphereGeometry(.15,10,8),HM(0xffffff),0,1.0,0,hd)}
+  const hatName=(r,hd,m,top)=>{const hh=cosOf(r).hat||0;{const hgp=hatGroup(T,hh);if(blind)hgp.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.color.setHex(0x777777)}});hd.add(hgp)}
      const nv=({kor:'🙈',sagir:'🙉',dilsiz:'🙊'})[r]+' '+(nmOf(r)||RN[r]);if(!blind){const t=tex(256,64),k=t.c;k.fillStyle='rgba(0,0,0,.55)';k.fillRect(0,8,256,48);k.fillStyle='#fff';k.font='bold 34px sans-serif';k.textAlign='center';k.fillText(nv,128,44);t.needsUpdate=true;const sp=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true}));sp.scale.set(2.4,.6,1);sp.position.set(0,top,0);m.add(sp)}};
   const glbCritter=(r,x,z,cs,kind)=>{const m=new T.Group();m.position.set(x,.2,z);sc.add(m);m.lookAt(0,.4,0);
     const hd=new T.Group(),mo=new T.Mesh();mo.visible=false;hd.add(mo);m.add(hd);const acc=new T.Group();m.add(acc);
@@ -1276,5 +1293,7 @@ try{(()=>{const b=document.getElementById('fsb'),d=document.documentElement,req=
   const upd=()=>{b.textContent=on()?'🗗':'⛶';b.title=on()?'Tam ekrandan çık':'Tam ekran'};
   b.onclick=()=>{try{if(on())(document.exitFullscreen||document.webkitExitFullscreen).call(document);else{const r=req.call(d,{navigationUI:'hide'});if(r&&r.catch)r.catch(()=>{})}}catch(e){}};
   document.addEventListener('fullscreenchange',()=>{upd();dispatchEvent(new Event('resize'))});document.addEventListener('webkitfullscreenchange',()=>{upd();dispatchEvent(new Event('resize'))});upd()})()}catch(e){}
-logEv('oyunu açtı');setup();
+const boot=()=>{const lv=LIVE.get();if(lv){st.room=lv.room;st.role=lv.role;REJ=true;logEv('sayfa yenilendi, odaya dönüyor');connect();return true}return false};
+if(!boot()){logEv('oyunu açtı');setup();
+}
 }</script></body></html>
